@@ -29,8 +29,7 @@ export default function useInput({
 
   const onFocus = useCallback(
     e => {
-      console.log("onFocus");
-      handleFocus();
+      handleFocus(); // TODO: do we want any arguments passed here?
       setTouched(true);
       setActive(true);
     },
@@ -39,8 +38,7 @@ export default function useInput({
 
   const onBlur = useCallback(
     e => {
-      console.log("onblur");
-      handleBlur();
+      handleBlur(); // TODO: do we want any arguments passed here?
       setActive(false);
     },
     [handleBlur]
@@ -48,8 +46,7 @@ export default function useInput({
 
   const onChange = useCallback(
     e => {
-      console.log("onChange");
-      handleChange();
+      handleChange(); // TODO: do we want any arguments passed here?
       const eventValue = getEventValue(e);
       setValue(prevValue => parse(eventValue, prevValue));
     },
@@ -66,6 +63,6 @@ export default function useInput({
     onChange,
     onFocus,
     onBlur,
-    value,
+    value: active ? value : format(value),
   };
 }

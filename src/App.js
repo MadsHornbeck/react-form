@@ -5,9 +5,10 @@ import "./App.css";
 import { useInput, useForm } from "./form";
 import Input from "./testComponents/Input";
 
+const validate = v => v.length > 4 && "Error";
 function App() {
-  const test = useInput({ validate: v => v.length > 4 && "Error" });
-  const { onSubmit } = useForm({ inputs: { test } });
+  const test = useInput({ validate });
+  const [onSubmit, isSubmitting] = useForm({ inputs: { test } });
   return (
     <div className="App">
       <header className="App-header">
@@ -22,6 +23,7 @@ function App() {
           }}
         >
           <Input {...test} />
+          {isSubmitting && <div>Submitting</div>}
           <button type="submit">Submit</button>
         </form>
         <p>
