@@ -1,4 +1,10 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  useCallback,
+  useDebugValue,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import { noop, id, getEventValue } from "./util";
 
@@ -15,18 +21,6 @@ export default function useInput({
   const [error, setError] = useState(undefined);
   const [active, setActive] = useState(false);
 
-  const meta = useMemo(
-    () => ({
-      active,
-      error,
-      setActive,
-      setError,
-      setTouched,
-      touched,
-    }),
-    [active, error, touched]
-  );
-
   const onFocus = useCallback(
     e => {
       handleFocus(); // TODO: do we want any arguments passed here?
@@ -34,14 +28,6 @@ export default function useInput({
       setActive(true);
     },
     [handleFocus]
-  );
-
-  const onBlur = useCallback(
-    e => {
-      handleBlur(); // TODO: do we want any arguments passed here?
-      setActive(false);
-    },
-    [handleBlur]
   );
 
   const onChange = useCallback(
@@ -53,16 +39,36 @@ export default function useInput({
     [handleChange, parse]
   );
 
+  const onBlur = useCallback(
+    e => {
+      handleBlur(); // TODO: do we want any arguments passed here?
+      setActive(false);
+    },
+    [handleBlur]
+  );
+
   useEffect(() => {
     const error = validate(value);
     setError(error);
   }, [validate, value]);
 
-  return {
-    meta,
-    onChange,
-    onFocus,
-    onBlur,
-    value: active ? value : format(value),
-  };
+  useDebugValue(value);
+
+  return useMemo(
+    () => ({
+      meta: {
+        active,
+        error,
+        setActive,
+        setError,
+        setTouched,
+        touched,
+      },
+      onBlur,
+      onChange,
+      onFocus,
+      value: active ? value : format(value),
+    }),
+    [active, error, format, onBlur, onChange, onFocus, touched, value]
+  );
 }

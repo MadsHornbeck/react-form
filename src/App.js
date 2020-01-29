@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
@@ -8,7 +8,8 @@ import Input from "./testComponents/Input";
 const validate = v => v.length > 4 && "Error";
 function App() {
   const test = useInput({ validate });
-  const [onSubmit, isSubmitting] = useForm({ inputs: { test } });
+  const inputs = useMemo(() => ({ test }), [test]);
+  const [onSubmit, isSubmitting] = useForm({ inputs });
   return (
     <div className="App">
       <header className="App-header">
