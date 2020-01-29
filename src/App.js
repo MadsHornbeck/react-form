@@ -1,12 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import logo from "./logo.svg";
+import "./App.css";
+
+import { useInput, useForm } from "./form";
+import Input from "./testComponents/Input";
 
 function App() {
+  const test = useInput({ validate: v => v.length > 4 && "Error" });
+  const { onSubmit } = useForm({ inputs: { test } });
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
+        <form
+          onSubmit={onSubmit}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            height: "200px",
+          }}
+        >
+          <Input {...test} />
+          <button type="submit">Submit</button>
+        </form>
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
