@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 
 import { noop, wait } from "./util";
+import { useSetErrors } from "./useValidation";
 
 export default function useForm({
   inputs,
@@ -8,21 +9,10 @@ export default function useForm({
   postSubmit = noop,
   handleSubmit = wait,
   validate = noop,
-  // For testing
-  //validate = ({ test }) => wait(test === "asdf" && { test: "henning" }),
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleErrors = useCallback(
-    (errors = {}) => {
-      const errorEntries = Object.entries(errors).filter(([k]) => inputs[k]);
-      errorEntries.forEach(([k, e]) => {
-        inputs[k].meta.setError(e);
-      });
-      return !!errorEntries.length;
-    },
-    [inputs]
-  );
+  const setErrors = useSetErrors(inputs);
 
   const onSubmit = useCallback(
     async e => {
@@ -35,7 +25,7 @@ export default function useForm({
         inputEntries.map(([k, v]) => [k, v.value])
       );
 
-      const hasFormError = handleErrors(await validate(values));
+      const hasFormError = setErrors(await validate(values));
       const hasError =
         hasFormError || inputEntries.some(([, v]) => v.meta.error);
       if (hasError) return console.log("hasError");
@@ -45,16 +35,16 @@ export default function useForm({
       const submitErrors = await handleSubmit(values);
       setIsSubmitting(false);
       postSubmit();
-      handleErrors(submitErrors);
+      setErrors(submitErrors);
       console.log("Post-submit", submitErrors);
     },
     [
-      handleErrors,
       handleSubmit,
       inputs,
       isSubmitting,
       postSubmit,
       preSubmit,
+      setErrors,
       validate,
     ]
   );

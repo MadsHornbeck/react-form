@@ -49,8 +49,7 @@ export default function useInput({
 
   const validation = useCallback(
     debounce(async value => {
-      const error = await validate(value);
-      setError(error);
+      setError(await validate(value));
     }, 100), // TODO: allow for configuration of delay
     [validate]
   );

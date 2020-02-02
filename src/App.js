@@ -2,19 +2,23 @@ import React, { useMemo } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
-import { useInput, useForm } from "./form";
+import { useInput, useForm, useValidation } from "./form";
 import Input from "./testComponents/Input";
 
 import { wait } from "./form/util";
 
 const validate = v => {
   if (!v.length) return "Required";
-  return wait(v.length > 4 && "Error");
+  return wait(v.length > 3 && "Error");
 };
+
+const formValidate = ({ test }) => wait(test === "asdf" && { test: "henning" });
+
 function App() {
   const test = useInput({ validate });
   const inputs = useMemo(() => ({ test }), [test]);
-  const [onSubmit, isSubmitting] = useForm({ inputs });
+  useValidation({ inputs, validate: formValidate });
+  const [onSubmit, isSubmitting] = useForm({ inputs, validate: formValidate });
   return (
     <div className="App">
       <header className="App-header">
