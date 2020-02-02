@@ -5,7 +5,12 @@ import "./App.css";
 import { useInput, useForm } from "./form";
 import Input from "./testComponents/Input";
 
-const validate = v => v.length > 4 && "Error";
+import { wait } from "./form/util";
+
+const validate = v => {
+  if (!v.length) return "Required";
+  return wait(v.length > 4 && "Error");
+};
 function App() {
   const test = useInput({ validate });
   const inputs = useMemo(() => ({ test }), [test]);

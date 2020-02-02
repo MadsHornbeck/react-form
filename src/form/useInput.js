@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 
-import { noop, id, getEventValue } from "./util";
+import { noop, id, getEventValue, debounce } from "./util";
 
 export default function useInput({
   format = id,
@@ -23,7 +23,7 @@ export default function useInput({
 
   const onFocus = useCallback(
     e => {
-      handleFocus(); // TODO: do we want any arguments passed here?
+      handleFocus(e); // TODO: do we want any arguments passed here?
       setTouched(true);
       setActive(true);
     },
@@ -32,7 +32,7 @@ export default function useInput({
 
   const onChange = useCallback(
     e => {
-      handleChange(); // TODO: do we want any arguments passed here?
+      handleChange(e); // TODO: do we want any arguments passed here?
       const eventValue = getEventValue(e);
       setValue(prevValue => parse(eventValue, prevValue));
     },
@@ -41,16 +41,23 @@ export default function useInput({
 
   const onBlur = useCallback(
     e => {
-      handleBlur(); // TODO: do we want any arguments passed here?
+      handleBlur(e); // TODO: do we want any arguments passed here?
       setActive(false);
     },
     [handleBlur]
   );
 
+  const validation = useCallback(
+    debounce(async value => {
+      const error = await validate(value);
+      setError(error);
+    }, 100), // TODO: allow for configuration of delay
+    [validate]
+  );
+
   useEffect(() => {
-    const error = validate(value);
-    setError(error);
-  }, [validate, value]);
+    validation(value);
+  }, [validation, value]);
 
   useDebugValue(value);
 
@@ -62,6 +69,7 @@ export default function useInput({
         setActive,
         setError,
         setTouched,
+        setValue,
         touched,
       },
       onBlur,
