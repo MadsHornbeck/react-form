@@ -16,7 +16,7 @@ export default function useInput({
   parse = id,
   validate = noop,
 } = {}) {
-  const [value, setValue] = useState("");
+  const [value, _setValue] = useState("");
   const [touched, setTouched] = useState(false);
   const [error, setError] = useState(undefined);
   const [active, setActive] = useState(false);
@@ -30,13 +30,20 @@ export default function useInput({
     [handleFocus]
   );
 
+  const setValue = useCallback(
+    value => {
+      _setValue(prevValue => parse(value, prevValue));
+    },
+    [parse]
+  );
+
   const onChange = useCallback(
     e => {
       handleChange(e); // TODO: do we want any arguments passed here?
       const eventValue = getEventValue(e);
-      setValue(prevValue => parse(eventValue, prevValue));
+      setValue(eventValue);
     },
-    [handleChange, parse]
+    [handleChange, setValue]
   );
 
   const onBlur = useCallback(
@@ -60,22 +67,27 @@ export default function useInput({
 
   useDebugValue(value);
 
+  const meta = useMemo(
+    () => ({
+      active,
+      error,
+      setActive,
+      setError,
+      setTouched,
+      setValue,
+      touched,
+    }),
+    [active, error, setValue, touched]
+  );
+
   return useMemo(
     () => ({
-      meta: {
-        active,
-        error,
-        setActive,
-        setError,
-        setTouched,
-        setValue,
-        touched,
-      },
+      meta,
       onBlur,
       onChange,
       onFocus,
       value: active ? value : format(value),
     }),
-    [active, error, format, onBlur, onChange, onFocus, touched, value]
+    [active, format, meta, onBlur, onChange, onFocus, value]
   );
 }
