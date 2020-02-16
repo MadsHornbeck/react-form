@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function({ meta, ...input }) {
+function Input({ meta, ...input }) {
   return (
     <div>
       <label>
@@ -16,3 +16,5 @@ export default function({ meta, ...input }) {
     </div>
   );
 }
+
+export default React.memo(Input);

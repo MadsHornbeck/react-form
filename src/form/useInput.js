@@ -4,6 +4,7 @@ import {
   useEffect,
   useMemo,
   useState,
+  useRef,
 } from "react";
 
 import { noop, id, getEventValue, debounce } from "./util";
@@ -80,14 +81,23 @@ export default function useInput({
     [active, error, setValue, touched]
   );
 
-  return useMemo(
-    () => ({
-      meta,
-      onBlur,
-      onChange,
-      onFocus,
-      value: active ? value : format(value),
-    }),
-    [active, format, meta, onBlur, onChange, onFocus, value]
-  );
+  const input = useRef({
+    meta,
+    onBlur,
+    onChange,
+    onFocus,
+    value: active ? value : format(value),
+  });
+
+  Object.entries({
+    value: active ? value : format(value),
+    onBlur,
+    onChange,
+    onFocus,
+    meta,
+  }).forEach(([name, update]) => {
+    input.current[name] = update;
+  });
+
+  return input.current;
 }

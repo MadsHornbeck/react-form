@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from "react";
 
-import { debounce } from "./util";
+import { useChanged } from "./useChangeHandler";
+import { mapObject } from "./util";
 
 export function useSetErrors(inputs) {
   return useCallback(
@@ -18,16 +19,18 @@ export function useSetErrors(inputs) {
 export default function useValidation({ inputs, validate }) {
   const setErrors = useSetErrors(inputs);
 
-  const validateForm = useCallback(
-    debounce(async () => {
-      const valueEntries = Object.entries(inputs).map(([k, v]) => [k, v.value]);
-      const values = Object.fromEntries(valueEntries);
-      setErrors(await validate(values));
-    }, 100),
-    [inputs, setErrors, validate]
-  );
+  const validateForm = useCallback(async () => {
+    const values = mapObject(inputs, "value");
+    setErrors(await validate(values));
+  }, [inputs, setErrors, validate]);
+
+  const changedInputs = useChanged(inputs);
 
   useEffect(() => {
-    validateForm();
-  }, [validateForm]);
+    if (!changedInputs.length) return;
+    const t = setTimeout(validateForm, 200);
+    return () => {
+      clearTimeout(t);
+    };
+  }, [changedInputs.length, validateForm]);
 }
