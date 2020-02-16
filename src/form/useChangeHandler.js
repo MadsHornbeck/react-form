@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 import { entriesMap } from "./util";
 
-export default function useChangeHandler({ inputs, handlers }) {
+export default function useChangeHandler({ inputs, handlers = {} }) {
   const changedInputs = useChanged(inputs);
 
   useEffect(() => {

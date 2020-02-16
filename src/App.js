@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
-import { useInput, useSubmit, useValidation, useChangeHandler } from "./form";
+import { useInput, useForm } from "./form";
 import Input from "./testComponents/Input";
 
 import { wait } from "./form/util";
@@ -31,11 +31,11 @@ function App() {
   const test = useInput({ validate });
   const fest = useInput({ validate });
   const inputs = useMemo(() => ({ test, fest }), [fest, test]);
-  useChangeHandler({ inputs, handlers });
-  useValidation({ inputs, validate: formValidate });
-  const [onSubmit, isSubmitting] = useSubmit({
+  const [onSubmit, isSubmitting] = useForm({
     inputs,
     validate: formValidate,
+    handlers,
+    initialValues: { test: "initial", fest: "values" },
   });
   return (
     <div className="App">

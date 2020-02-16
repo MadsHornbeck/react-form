@@ -7,7 +7,7 @@ import {
   useRef,
 } from "react";
 
-import { noop, id, getEventValue, debounce } from "./util";
+import { noop, id, getEventValue } from "./util";
 
 export default function useInput({
   format = id,
@@ -17,6 +17,7 @@ export default function useInput({
   parse = id,
   validate = noop,
 } = {}) {
+  const input = useRef({});
   const [value, _setValue] = useState("");
   const [touched, setTouched] = useState(false);
   const [error, setError] = useState(undefined);
@@ -56,14 +57,18 @@ export default function useInput({
   );
 
   const validation = useCallback(
-    debounce(async value => {
+    async value => {
       setError(await validate(value));
-    }, 100), // TODO: allow for configuration of delay
+    },
     [validate]
   );
 
   useEffect(() => {
-    validation(value);
+    const t = setTimeout(() => validation(value), 150);
+    // TODO: allow for configuration of delay
+    return () => {
+      clearTimeout(t);
+    };
   }, [validation, value]);
 
   useDebugValue(value);
@@ -81,23 +86,11 @@ export default function useInput({
     [active, error, setValue, touched]
   );
 
-  const input = useRef({
-    meta,
-    onBlur,
-    onChange,
-    onFocus,
-    value: active ? value : format(value),
-  });
-
-  Object.entries({
+  return Object.assign(input.current, {
     value: active ? value : format(value),
     onBlur,
     onChange,
     onFocus,
     meta,
-  }).forEach(([name, update]) => {
-    input.current[name] = update;
   });
-
-  return input.current;
 }

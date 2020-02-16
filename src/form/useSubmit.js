@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect, useMemo } from "react";
+import { useCallback, useState } from "react";
 
 import { noop, wait } from "./util";
 import { useSetErrors } from "./useValidation";
@@ -13,10 +13,6 @@ export default function useSubmit({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const setErrors = useSetErrors(inputs);
-
-  useEffect(() => {
-    console.log("inputs changed");
-  }, [inputs]);
 
   const onSubmit = useCallback(
     async e => {
