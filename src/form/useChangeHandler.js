@@ -1,32 +1,30 @@
 import { useEffect, useRef } from "react";
 
+import { entriesMap } from "./util";
+
 export default function useChangeHandler({ inputs, handlers }) {
   const changedInputs = useChanged(inputs);
 
   useEffect(() => {
-    if (changedInputs.length) {
-      changedInputs.forEach(([name]) => {
-        if (handlers[name]) handlers[name](inputs);
-      });
-    }
+    if (!changedInputs.length) return;
+    changedInputs.forEach(([name]) => {
+      if (handlers[name]) handlers[name](inputs);
+    });
   }, [changedInputs, handlers, inputs]);
 }
 
-export function useChanged(inputs, attrName = "value") {
+export function useChanged(inputs, attr = "value") {
   const prev = useRef(null);
 
   const changedInputs = prev.current?.filter(
-    ([name, value]) => inputs[name]?.[attrName] !== value
+    ([name, attrValue]) => inputs[name]?.[attr] !== attrValue
   );
 
   useEffect(() => {
     if (prev.current === null || changedInputs.length) {
-      prev.current = Object.entries(inputs).map(([name, input]) => [
-        name,
-        input[attrName],
-      ]);
+      prev.current = entriesMap(inputs, attr);
     }
-  }, [attrName, changedInputs, inputs]);
+  }, [attr, changedInputs, inputs]);
 
   return changedInputs || [];
 }

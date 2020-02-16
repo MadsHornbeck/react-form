@@ -1,9 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect, useMemo } from "react";
 
 import { noop, wait } from "./util";
 import { useSetErrors } from "./useValidation";
 
-export default function useForm({
+export default function useSubmit({
   inputs,
   preSubmit = noop,
   postSubmit = noop,
@@ -13,6 +13,10 @@ export default function useForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const setErrors = useSetErrors(inputs);
+
+  useEffect(() => {
+    console.log("inputs changed");
+  }, [inputs]);
 
   const onSubmit = useCallback(
     async e => {
@@ -34,7 +38,7 @@ export default function useForm({
       setIsSubmitting(true);
       const submitErrors = await handleSubmit(values);
       setIsSubmitting(false);
-      postSubmit();
+      postSubmit(values, submitErrors);
       setErrors(submitErrors);
       console.log("Post-submit", submitErrors);
     },

@@ -6,11 +6,10 @@ import { mapObject } from "./util";
 export function useSetErrors(inputs) {
   return useCallback(
     (errors = {}) => {
-      const errorEntries = Object.entries(errors).filter(([k]) => inputs[k]);
-      errorEntries.forEach(([k, e]) => {
-        inputs[k].meta.setError(e);
-      });
-      return !!errorEntries.length;
+      for (const name in errors) {
+        if (!inputs[name]) continue;
+        inputs[name].meta.setError(errors[name]);
+      }
     },
     [inputs]
   );

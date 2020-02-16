@@ -16,5 +16,8 @@ export const debounce = (func, delay) => {
   };
 };
 
+export const entriesMap = (obj, attr) =>
+  Object.entries(obj).map(([k, v]) => [k, v[attr]]);
+
 export const mapObject = (obj, attr) =>
-  Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, v[attr]]));
+  Object.fromEntries(entriesMap(obj, attr));
