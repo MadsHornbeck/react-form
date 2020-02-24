@@ -1,7 +1,10 @@
 export const noop = () => {};
 export const id = a => a;
 
-export const getEventValue = e => e.currentTarget.value;
+export const getEventValue = e => {
+  if (e.currentTarget.type === "checkbox") return e.currentTarget.checked;
+  return e.currentTarget.value;
+};
 
 export const wait = (data, ms = 500) =>
   new Promise(resolve => {

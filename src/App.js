@@ -3,7 +3,7 @@ import logo from "./logo.svg";
 import "./App.css";
 
 import { useInput, useForm } from "./form";
-import Input from "./testComponents/Input";
+import { Input } from "./testComponents";
 
 import { wait } from "./form/util";
 
@@ -28,7 +28,7 @@ const handlers = {
 };
 
 function App() {
-  const test = useInput({ validate });
+  const test = useInput({ validate, format: v => `$ ${v}` });
   const fest = useInput({ validate });
   const inputs = useMemo(() => ({ test, fest }), [fest, test]);
   const [onSubmit, isSubmitting] = useForm({
@@ -52,6 +52,8 @@ function App() {
         >
           <Input {...test} />
           <Input {...fest} />
+          {/* <Select {...fest} options={["Kage", "Fisk", "Ost"]} /> */}
+          {/* <Radio {...fest} options={["Kage", "Fisk", "Ost"]} /> */}
           {isSubmitting && <div>Submitting</div>}
           <button type="submit">Submit</button>
         </form>
@@ -71,4 +73,4 @@ function App() {
   );
 }
 
-export default App;
+export default React.memo(App);

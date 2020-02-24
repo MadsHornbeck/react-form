@@ -1,11 +1,18 @@
 import React from "react";
 
-function Input({ type, meta, ...input }) {
+function Input({ options, meta, ...input }) {
   return (
     <div>
       <label>
         <div>
-          <input type={type} {...input} checked={input.value} />
+          <select {...input}>
+            <option disabled></option>
+            {options.map(v => (
+              <option key={v} value={v}>
+                {v}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           {meta.active && <div>Active</div>}
