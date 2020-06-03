@@ -1,34 +1,50 @@
 {
-  "name": "form-hooks",
+  "name": "@hornbeck/react-form",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.4.0",
-    "@testing-library/user-event": "^7.2.1",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-scripts": "3.3.0"
+  "author": {
+    "name": "Mads Hornbeck",
+    "email": "madshornbeck@gmail.com"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "react",
+    "form",
+    "input",
+    "validate"
+  ],
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "devDependencies": {
+    "@babel/core": "7.10.0",
+    "@babel/preset-env": "7.10.0",
+    "@babel/preset-react": "7.10.0",
+    "babel-eslint": "10.1.0",
+    "eslint": "7.1.0",
+    "eslint-config-prettier": "6.11.0",
+    "eslint-plugin-prettier": "3.1.3",
+    "eslint-plugin-react": "7.20.0",
+    "eslint-plugin-react-hooks": "4.0.4",
+    "prettier": "2.0.5",
+    "react": "16.13.1",
+    "rollup": "2.10.9",
+    "rollup-plugin-babel": "4.4.0",
+    "rollup-plugin-peer-deps-external": "2.2.2"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build": "rollup -c",
+    "start": "rollup -c -w"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+  "files": [
+    "dist"
+  ]
 }

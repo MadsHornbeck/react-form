@@ -1,11 +1,10 @@
 import React, { useMemo } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 
-import { useInput, useForm, useMultipleSelect } from "./form";
-import { Input, Select, MultipleSelect } from "./testComponents";
+import { useInput, useForm, useMultipleSelect } from "@hornbeck/react-form";
+import { Input, Select, MultipleSelect } from "./inputComponents";
 
-import { wait } from "./form/util";
+import { wait } from "./util";
 
 const validate = v => {
   if (!v.length) return "Required";
@@ -39,7 +38,7 @@ function App() {
       return next;
     },
   });
-  const inputs = useMemo(() => ({  fest }), [fest, ]);
+  const inputs = useMemo(() => ({ fest }), [fest,]);
   const [onSubmit, isSubmitting] = useForm({
     inputs,
     // validate: formValidate,
@@ -49,7 +48,6 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
         <form
           onSubmit={onSubmit}
           style={{
@@ -70,14 +68,6 @@ function App() {
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
       </header>
     </div>
   );

@@ -1,13 +1,13 @@
 import { useCallback, useState } from "react";
 
-import { noop, wait } from "./util";
+import { noop } from "./util";
 import { useSetErrors } from "./useValidation";
 
 export default function useSubmit({
+  handleSubmit,
   inputs,
-  preSubmit = noop,
   postSubmit = noop,
-  handleSubmit = wait,
+  preSubmit = noop,
   validate = noop,
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
