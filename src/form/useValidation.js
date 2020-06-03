@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 
 import { useChanged } from "./useChangeHandler";
-import { mapObject } from "./util";
+import { mapObject, noop } from "./util";
 
 export function useSetErrors(inputs) {
   return useCallback(
@@ -15,7 +15,7 @@ export function useSetErrors(inputs) {
   );
 }
 
-export default function useValidation({ inputs, validate }) {
+export default function useValidation({ inputs, validate = noop }) {
   const setErrors = useSetErrors(inputs);
 
   const validateForm = useCallback(async () => {

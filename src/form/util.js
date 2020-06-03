@@ -2,6 +2,13 @@ export const noop = () => {};
 export const id = a => a;
 
 export const getEventValue = e => {
+  if (e.currentTarget.type === "select-multiple") {
+    // e.persist();
+    // console.log(e);
+    // console.dir(e.currentTarget);
+    // console.log(e.target.value);
+    return e.currentTarget.value;
+  }
   if (e.currentTarget.type === "checkbox") return e.currentTarget.checked;
   return e.currentTarget.value;
 };

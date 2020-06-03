@@ -16,9 +16,10 @@ export default function useInput({
   handleFocus = noop,
   parse = id,
   validate = noop,
+  initialValue = "",
 } = {}) {
   const input = useRef({});
-  const [value, _setValue] = useState("");
+  const [value, _setValue] = useState(initialValue);
   const [touched, setTouched] = useState(false);
   const [error, setError] = useState(undefined);
   const [active, setActive] = useState(false);
@@ -93,4 +94,23 @@ export default function useInput({
     onFocus,
     meta,
   });
+}
+
+export function useMultipleSelect(a) {
+  const f = useInput(a);
+
+  const onClick = useCallback(
+    e => {
+      if (e.target.tagName === "OPTION" && !e.target.disabled) {
+        f.meta.setValue(e.target.value);
+      }
+    },
+    [f.meta]
+  );
+
+  return {
+    ...f,
+    onClick,
+    onChange: noop,
+  };
 }

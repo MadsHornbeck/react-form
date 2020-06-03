@@ -2,8 +2,8 @@ import React, { useMemo } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 
-import { useInput, useForm } from "./form";
-import { Input } from "./testComponents";
+import { useInput, useForm, useMultipleSelect } from "./form";
+import { Input, Select, MultipleSelect } from "./testComponents";
 
 import { wait } from "./form/util";
 
@@ -27,15 +27,24 @@ const handlers = {
   },
 };
 
+const options = ["Kage", "Fisk", "Ost"];
 function App() {
-  const test = useInput({ validate, format: v => `$ ${v}` });
-  const fest = useInput({ validate });
-  const inputs = useMemo(() => ({ test, fest }), [fest, test]);
+  // const test = useInput({ format: v => `$ ${v}` });
+  const fest = useMultipleSelect({
+    // validate,
+    initialValue: [],
+    parse: (v, p) => {
+      const next = p.includes(v) ? p.filter(a => a !== v) : p.concat(v);
+      console.log(v, p, next);
+      return next;
+    },
+  });
+  const inputs = useMemo(() => ({  fest }), [fest, ]);
   const [onSubmit, isSubmitting] = useForm({
     inputs,
-    validate: formValidate,
+    // validate: formValidate,
     handlers,
-    initialValues: { test: "initial", fest: "values" },
+    // initialValues: { test: "initial", fest: "values" },
   });
   return (
     <div className="App">
@@ -50,9 +59,10 @@ function App() {
             height: "200px",
           }}
         >
-          <Input {...test} />
-          <Input {...fest} />
-          {/* <Select {...fest} options={["Kage", "Fisk", "Ost"]} /> */}
+          {/* <Input {...test} /> */}
+          {/* <Input {...fest} /> */}
+          {/* <Select {...fest} options={options} /> */}
+          <MultipleSelect {...fest} options={options} />
           {/* <Radio {...fest} options={["Kage", "Fisk", "Ost"]} /> */}
           {isSubmitting && <div>Submitting</div>}
           <button type="submit">Submit</button>
