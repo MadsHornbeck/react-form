@@ -1,27 +1,27 @@
 import React from "react";
 
-function Input({ options, meta, ...input }) {
+function Input({ options, meta, ...input }, ref) {
   return (
-    <div>
+    <div className="input">
       <label>
         <div>
-          <select {...input}>
+          <select {...input} ref={ref}>
             <option disabled></option>
-            {options.map(v => (
+            {options.map((v) => (
               <option key={v} value={v}>
                 {v}
               </option>
             ))}
           </select>
         </div>
-        <div>
-          {meta.active && <div>Active</div>}
-          {meta.touched && <div>Touched</div>}
-          {meta.error && <div>{meta.error}</div>}
-        </div>
       </label>
+      <div>
+        {meta.active && <div>Active</div>}
+        {meta.touched && <div>Touched</div>}
+        {meta.error && <div>{meta.error}</div>}
+      </div>
     </div>
   );
 }
 
-export default React.memo(Input);
+export default React.memo(React.forwardRef(Input));

@@ -1,18 +1,18 @@
 import React from "react";
 
-function Input({ options, meta, ...input }) {
+function Input({ options, meta, label, ...input }, ref) {
   const name = React.useRef(Math.random());
   return (
-    <div>
-      <label>
+    <div className="input">
+      <label className="radio">
+        {label}:
         <div>
-          {options.map(v => (
-            <label>
+          {options.map((v) => (
+            <label key={v}>
               <input
                 type="radio"
                 name={name.current}
                 {...input}
-                key={v}
                 value={v}
                 checked={input.value === v}
               />
@@ -20,14 +20,14 @@ function Input({ options, meta, ...input }) {
             </label>
           ))}
         </div>
-        <div>
-          {meta.active && <div>Active</div>}
-          {meta.touched && <div>Touched</div>}
-          {meta.error && <div>{meta.error}</div>}
-        </div>
       </label>
+      <div className="meta">
+        {meta.active && <div>Active</div>}
+        {meta.touched && <div>Touched</div>}
+        {meta.error && <div>{meta.error}</div>}
+      </div>
     </div>
   );
 }
 
-export default React.memo(Input);
+export default React.memo(React.forwardRef(Input));

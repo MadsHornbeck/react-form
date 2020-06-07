@@ -1,20 +1,19 @@
 import React from "react";
 
-function Input({ type, meta, ...input }) {
+function Input({ type, meta, label, ...input }, ref) {
   return (
-    <div>
+    <div className="input">
       <label>
-        <div>
-          <input type={type} {...input} checked={input.value} />
-        </div>
-        <div>
-          {meta.active && <div>Active</div>}
-          {meta.touched && <div>Touched</div>}
-          {meta.error && <div>{meta.error}</div>}
-        </div>
+        {label}:
+        <input ref={ref} type={type} {...input} checked={input.value} />
       </label>
+      <div className="meta">
+        {meta.active && <div>Active</div>}
+        {meta.touched && <div>Touched</div>}
+        {meta.error && <div>{meta.error}</div>}
+      </div>
     </div>
   );
 }
 
-export default React.memo(Input);
+export default React.memo(React.forwardRef(Input));

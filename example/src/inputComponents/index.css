@@ -1,0 +1,16 @@
+.input .radio {
+  display: flex;
+}
+
+.input .radio label {
+  display: flex;
+  font-size: calc(0.3rem + 0.6vmax);
+}
+
+.input .meta {
+  font-size: calc(0.3rem + 0.6vmax);
+}
+
+.input select {
+  width: 100px;
+}
