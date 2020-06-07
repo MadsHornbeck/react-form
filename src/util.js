@@ -1,7 +1,7 @@
 export const noop = () => {};
-export const id = a => a;
+export const id = (a) => a;
 
-export const getEventValue = e => {
+export const getEventValue = (e) => {
   if (e.currentTarget.type === "select-multiple") {
     // e.persist();
     // console.log(e);
@@ -14,7 +14,7 @@ export const getEventValue = e => {
 };
 
 export const wait = (data, ms = 500) =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     setTimeout(() => resolve(data), ms);
   });
 

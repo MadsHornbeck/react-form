@@ -15,14 +15,15 @@ export default function useSubmit({
   const setErrors = useSetErrors(inputs);
 
   const onSubmit = useCallback(
-    async e => {
+    async (e) => {
       console.log("submit");
       e.preventDefault();
       if (isSubmitting) return;
       const inputEntries = Object.entries(inputs);
       inputEntries.forEach(([, v]) => v.meta.setTouched(true));
       const values = Object.fromEntries(
-        inputEntries.map(([k, v]) => [k, v.value])
+        // TODO: Use a value from input that is not formatted.
+        inputEntries.map(([k, v]) => [k, v.meta.actualValue])
       );
 
       const hasFormError = setErrors(await validate(values));
