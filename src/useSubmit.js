@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-import { noop } from "./util";
+import { mapObject, noop } from "./util";
 import useSetErrors from "./useSetErrors";
 
 export default function useSubmit({
@@ -11,33 +11,24 @@ export default function useSubmit({
   validate = noop,
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const setErrors = useSetErrors(inputs);
-
-  const validation = useCallback(
-    async (values) =>
-      Object.entries(inputs).some(([, i]) => i.meta.error) ||
-      setErrors(await validate(values)),
-    [inputs, setErrors, validate]
-  );
 
   const onSubmit = useCallback(
     async (e) => {
       console.log("submit");
       e.preventDefault();
       if (isSubmitting) return;
-      const inputEntries = Object.entries(inputs);
-      inputEntries.forEach(([, v]) => v.meta.setTouched(true));
+      for (const name in inputs) {
+        inputs[name].meta.setTouched(true);
+      }
+      const values = mapObject(inputs, (i) => i.meta.actualValue);
 
-      const values = Object.fromEntries(
-        inputEntries.map(([k, v]) => [k, v.meta.actualValue])
-      );
-      const hasError = await validation(values);
+      const hasError =
+        Object.values(inputs).some((i) => i.meta.error) ||
+        setErrors(await validate(values));
 
       if (hasError) {
-        const errors = Object.fromEntries(
-          inputEntries.map(([k, v]) => [k, v.meta.error])
-        );
+        const errors = mapObject(inputs, (i) => i.meta.error);
         console.log("hasError", errors);
         return;
       }
@@ -57,7 +48,7 @@ export default function useSubmit({
       postSubmit,
       preSubmit,
       setErrors,
-      validation,
+      validate,
     ]
   );
 

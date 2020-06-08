@@ -9,6 +9,7 @@
 
 .input .meta {
   font-size: calc(0.3rem + 0.6vmax);
+  height: 50px;
 }
 
 .input select {

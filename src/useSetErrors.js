@@ -1,5 +1,6 @@
 import React from "react";
 
+// TODO: consider making this *not* a hook
 export default function useSetErrors(inputs) {
   return React.useCallback(
     (errors = {}) => {

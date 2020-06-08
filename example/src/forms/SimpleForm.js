@@ -12,7 +12,6 @@ const isEmail = (v) =>
   !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? "Must be a valid email" : undefined;
 
 const phoneFormat = (v) => {
-  console.log(v);
   const local = v.slice(0, 3).padEnd(3, "_");
   const first = v.slice(3, 6).padEnd(3, "_");
   const last = v.slice(6, 10).padEnd(4, "_");

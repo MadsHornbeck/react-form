@@ -1,9 +1,10 @@
 import React from "react";
 
-import useChanged from "./useChanged";
-
-export default function useChangeHandler({ inputs, handlers = {} }) {
-  const changedInputs = useChanged(inputs);
+export default function useChangeHandler({
+  changedInputs,
+  inputs,
+  handlers = {},
+}) {
   React.useEffect(() => {
     changedInputs.forEach((name) => {
       if (handlers[name]) handlers[name](inputs);

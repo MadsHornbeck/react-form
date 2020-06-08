@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
 
-import useSubmit from "./useSubmit";
 import useChangeHandler from "./useChangeHandler";
+import useChanged from "./useChanged";
+import useSubmit from "./useSubmit";
 import useValidation from "./useValidation";
 
 export default function useForm({
-  inputs,
-  handlers,
-  preSubmit,
-  postSubmit,
   handleSubmit,
-  validate,
+  handlers,
   initialValues,
+  inputs,
+  postSubmit,
+  preSubmit,
   reinitialize, // TODO: figure out a more elegant solution to this exists.
+  validate,
 }) {
   const [didInit, setDidInit] = useState(false);
+  const changedInputs = useChanged({ inputs });
 
   useEffect(() => {
     setDidInit(!reinitialize);
@@ -29,8 +31,8 @@ export default function useForm({
     setDidInit(true);
   }, [didInit]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useChangeHandler({ inputs, handlers });
-  useValidation({ inputs, validate });
+  useChangeHandler({ changedInputs, inputs, handlers });
+  useValidation({ changedInputs, inputs, validate });
   return useSubmit({
     handleSubmit,
     inputs,
