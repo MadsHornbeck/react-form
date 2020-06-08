@@ -1,19 +1,16 @@
 import React from "react";
 
-import useSetErrors from "./useSetErrors";
-import { mapObject, noop } from "./util";
+import { mapObject, noop, setErrors } from "./util";
 
 export default function useValidation({
   changedInputs,
   inputs,
   validate = noop,
 }) {
-  const setErrors = useSetErrors(inputs);
-
   const validateForm = React.useCallback(async () => {
     const values = mapObject(inputs, (i) => i.meta.actualValue);
-    setErrors(await validate(values));
-  }, [inputs, setErrors, validate]);
+    setErrors(inputs, await validate(values));
+  }, [inputs, validate]);
 
   React.useEffect(() => {
     validateForm();
