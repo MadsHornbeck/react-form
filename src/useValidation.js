@@ -1,35 +1,23 @@
-import { useCallback, useEffect } from "react";
+import React from "react";
 
-import { useChanged } from "./useChangeHandler";
+import useChanged from "./useChanged";
+import useSetErrors from "./useSetErrors";
 import { mapObject, noop } from "./util";
-
-export function useSetErrors(inputs) {
-  return useCallback(
-    (errors = {}) => {
-      for (const name in errors) {
-        if (!inputs[name]) continue;
-        inputs[name].meta.setError(errors[name]);
-      }
-    },
-    [inputs]
-  );
-}
 
 export default function useValidation({ inputs, validate = noop }) {
   const setErrors = useSetErrors(inputs);
 
-  const validateForm = useCallback(async () => {
-    const values = mapObject(inputs, "value");
+  const validateForm = React.useCallback(async () => {
+    const values = mapObject(inputs, (i) => i.meta.actualValue);
     setErrors(await validate(values));
   }, [inputs, setErrors, validate]);
 
   const changedInputs = useChanged(inputs);
 
-  useEffect(() => {
-    if (!changedInputs.length) return;
+  React.useEffect(() => {
     const t = setTimeout(validateForm, 200);
     return () => {
       clearTimeout(t);
     };
-  }, [changedInputs.length, validateForm]);
+  }, [changedInputs, validateForm]);
 }

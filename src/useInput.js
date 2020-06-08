@@ -19,7 +19,6 @@ export default function useInput({
   parse = id,
   validate = noop,
 } = {}) {
-  const input = useRef({});
   // TODO: Try to find a better name than: `actualValue`.
   const [actualValue, setActualValue] = useState(initialValue);
   const formattedValue = useMemo(() => format(actualValue), [
@@ -29,19 +28,8 @@ export default function useInput({
   const [touched, setTouched] = useState(false);
   const [error, setError] = useState(undefined);
   const [active, setActive] = useState(false);
-
-  // TODO: consider using ref instead.
-  const [target, setTarget] = useState(null);
-
-  const onFocus = useCallback(
-    (e) => {
-      handleFocus(e); // TODO: do we want any arguments passed here?
-      setTarget(e.currentTarget);
-      setTouched(true);
-      setActive(true);
-    },
-    [handleFocus]
-  );
+  const input = useRef({});
+  const ref = useRef();
 
   const setValue = useCallback(
     (value) => {
@@ -50,48 +38,51 @@ export default function useInput({
     [parse]
   );
 
+  const onFocus = useCallback(
+    (e) => {
+      handleFocus(e); // TODO: do we want any arguments passed here?
+      setTouched(true);
+      setActive(true);
+    },
+    [handleFocus]
+  );
+
   const onChange = useCallback(
     (e) => {
-      handleChange(e); // TODO: do we want any arguments passed here?
-      setTarget(e.currentTarget);
+      // TODO: do we want any arguments passed here?
+      handleChange(e);
       const eventValue = getEventValue(e);
       setValue(eventValue);
     },
     [handleChange, setValue]
   );
 
-  // TODO: test this, should move cursor properly in formatted field
-  useEffect(() => {
-    if (target && handleCursor) {
-      console.log(target);
-      // TODO: find a name for this
-      const selection = handleCursor(actualValue, formattedValue);
-      target.setSelectionRange(selection, selection);
-    }
-  }, [active, handleCursor, target, actualValue, formattedValue]);
-
   const onBlur = useCallback(
     (e) => {
-      handleBlur(e); // TODO: do we want any arguments passed here?
+      // TODO: do we want any arguments passed here?
+      handleBlur(e);
       setActive(false);
     },
     [handleBlur]
   );
 
-  const validation = useCallback(
-    async (value) => {
-      setError(await validate(value));
-    },
-    [validate]
-  );
-
   useEffect(() => {
-    // TODO: allow for configuration of delay
-    const t = setTimeout(() => validation(actualValue), 150);
+    const t = setTimeout(async () => {
+      setError(await validate(actualValue));
+      // TODO: allow for configuration of validation delay
+    }, 150);
     return () => {
       clearTimeout(t);
     };
-  }, [actualValue, validation]);
+  }, [actualValue, validate, setError]);
+
+  useEffect(() => {
+    if (ref.current && handleCursor) {
+      const selection = handleCursor(actualValue, ref.current);
+      // TODO: figure out how to handle case where a character in the middle is deleted.
+      ref.current.setSelectionRange(selection, selection);
+    }
+  }, [handleCursor, actualValue]);
 
   useDebugValue(actualValue);
 
@@ -115,7 +106,7 @@ export default function useInput({
     onBlur,
     onChange,
     onFocus,
-    // value: active ? value : format(value),
+    ref,
     value: active && !showFormattedValue ? actualValue : formattedValue,
   });
 }

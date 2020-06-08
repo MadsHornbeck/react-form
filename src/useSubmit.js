@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
 import { noop } from "./util";
-import { useSetErrors } from "./useValidation";
+import useSetErrors from "./useSetErrors";
 
 export default function useSubmit({
   handleSubmit,
@@ -14,6 +14,13 @@ export default function useSubmit({
 
   const setErrors = useSetErrors(inputs);
 
+  const validation = useCallback(
+    async (values) =>
+      Object.entries(inputs).some(([, i]) => i.meta.error) ||
+      setErrors(await validate(values)),
+    [inputs, setErrors, validate]
+  );
+
   const onSubmit = useCallback(
     async (e) => {
       console.log("submit");
@@ -21,23 +28,27 @@ export default function useSubmit({
       if (isSubmitting) return;
       const inputEntries = Object.entries(inputs);
       inputEntries.forEach(([, v]) => v.meta.setTouched(true));
+
       const values = Object.fromEntries(
-        // TODO: Use a value from input that is not formatted.
         inputEntries.map(([k, v]) => [k, v.meta.actualValue])
       );
+      const hasError = await validation(values);
 
-      const hasFormError = setErrors(await validate(values));
-      const hasError =
-        hasFormError || inputEntries.some(([, v]) => v.meta.error);
-      if (hasError) return console.log("hasError");
+      if (hasError) {
+        const errors = Object.fromEntries(
+          inputEntries.map(([k, v]) => [k, v.meta.error])
+        );
+        console.log("hasError", errors);
+        return;
+      }
 
       preSubmit(values);
       setIsSubmitting(true);
       const submitErrors = await handleSubmit(values);
       setIsSubmitting(false);
-      postSubmit(values, submitErrors);
       setErrors(submitErrors);
-      console.log("Post-submit", submitErrors);
+      postSubmit(values, submitErrors);
+      console.log("Post-submit", values, submitErrors);
     },
     [
       handleSubmit,
@@ -46,7 +57,7 @@ export default function useSubmit({
       postSubmit,
       preSubmit,
       setErrors,
-      validate,
+      validation,
     ]
   );
 
