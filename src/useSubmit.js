@@ -21,6 +21,7 @@ export default function useSubmit({
       }
       const values = mapObject(inputs, (i) => i.meta.actualValue);
 
+      // TODO: maybe handle input level error promise
       const hasError =
         Object.values(inputs).some((i) => i.meta.error) ||
         setErrors(inputs, await validate(values));

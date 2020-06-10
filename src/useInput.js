@@ -8,7 +8,7 @@ export default function useInput({
   handleChange = noop,
   handleCursor,
   handleFocus = noop,
-  initialValue = "",
+  initialValue = "", // TODO: maybe add a reset function to reset to initialValue
   parse = id,
   validate = noop,
 } = {}) {

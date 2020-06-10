@@ -17,8 +17,8 @@ export default function useForm({
   const changedInputs = useChanged({ inputs });
 
   const setValues = React.useCallback(
-    (initValues) => {
-      Object.entries(initValues)
+    (values) => {
+      Object.entries(values)
         .filter(([name]) => inputs[name])
         .forEach(([name, value]) => inputs[name].meta.setValue(value));
     },
@@ -40,7 +40,7 @@ export default function useForm({
   });
 
   // TODO: figure out if this is the best way to do this.
-  return React.useMemo(() => ({ onSubmit, isSubmitting, setValues, inputs }), [
+  return React.useMemo(() => ({ inputs, isSubmitting, onSubmit, setValues }), [
     inputs,
     isSubmitting,
     onSubmit,

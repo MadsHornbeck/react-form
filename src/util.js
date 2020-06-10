@@ -12,9 +12,9 @@ export const getEventValue = (e) => {
 };
 
 export function setErrors(inputs, errors = {}) {
-  const errorEntries = Object.entries(errors).filter(([name]) => inputs[name]);
-  errorEntries.forEach(([name, error]) => inputs[name].meta.setError(error));
-  return !!errorEntries.length;
+  const errs = Object.entries(errors).filter(([name]) => inputs[name]);
+  errs.forEach(([name, error]) => inputs[name].meta.setError(error));
+  return !!errs.length;
 }
 
 // TODO: should probably be renamed
