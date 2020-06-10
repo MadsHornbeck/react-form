@@ -11,7 +11,7 @@ export const getEventValue = (e) => {
   }
 };
 
-export function setErrors(inputs, errors) {
+export function setErrors(inputs, errors = {}) {
   const errorEntries = Object.entries(errors).filter(([name]) => inputs[name]);
   errorEntries.forEach(([name, error]) => inputs[name].meta.setError(error));
   return !!errorEntries.length;

@@ -12,6 +12,26 @@
   height: 50px;
 }
 
+.input input {
+  padding: 0.6em;
+  border-color: none;
+  border-radius: 0.3em;
+  border-style: solid;
+  border-width: 2px;
+}
+
+.input input.touched {
+  border-color: limegreen;
+}
+
+.input input.active {
+  border-color: blue;
+}
+
+.input input.error {
+  border-color: red;
+}
+
 .input select {
   width: 100px;
 }

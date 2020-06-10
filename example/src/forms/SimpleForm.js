@@ -63,7 +63,7 @@ function SimpleForm() {
     [age, canBuyAlcohol, email, name, phone, sex]
   );
 
-  const [onSubmit, isSubmitting] = useForm({
+  const form = useForm({
     inputs,
     handleSubmit,
     validate: handleSubmit,
@@ -71,7 +71,7 @@ function SimpleForm() {
   });
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={form.onSubmit}>
       <Input {...name} label="Name" />
       <Input {...email} label="Email" />
       <Input {...phone} label="Phone" />
@@ -83,8 +83,8 @@ function SimpleForm() {
         label="Can buy alcohol"
         disabled={age.value < 18}
       />
-      <button type="submit" disabled={false && isSubmitting}>
-        Submit
+      <button type="submit" disabled={form.isSubmitting}>
+        {form.isSubmitting ? "Is submitting" : "Submit"}
       </button>
     </form>
   );

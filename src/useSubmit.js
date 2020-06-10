@@ -13,9 +13,9 @@ export default function useSubmit({
 
   const onSubmit = useCallback(
     async (e) => {
-      console.log("submit");
       e.preventDefault();
       if (isSubmitting) return;
+      console.log("submit");
       for (const name in inputs) {
         inputs[name].meta.setTouched(true);
       }
@@ -35,7 +35,7 @@ export default function useSubmit({
       setIsSubmitting(true);
       const submitErrors = await handleSubmit(values);
       setIsSubmitting(false);
-      setErrors(submitErrors);
+      setErrors(inputs, submitErrors);
       postSubmit(values, submitErrors);
       console.log("Post-submit", values, submitErrors);
     },

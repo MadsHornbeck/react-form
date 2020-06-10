@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React from "react";
 
 import useChangeHandler from "./useChangeHandler";
 import useChanged from "./useChanged";
@@ -8,36 +8,42 @@ import useValidation from "./useValidation";
 export default function useForm({
   handleSubmit,
   handlers,
-  initialValues,
+  initialValues = {},
   inputs,
   postSubmit,
   preSubmit,
-  reinitialize, // TODO: figure out a more elegant solution to this exists.
   validate,
 }) {
-  const [didInit, setDidInit] = useState(false);
   const changedInputs = useChanged({ inputs });
 
-  useEffect(() => {
-    setDidInit(!reinitialize);
-  }, [reinitialize]);
+  const setValues = React.useCallback(
+    (initValues) => {
+      Object.entries(initValues)
+        .filter(([name]) => inputs[name])
+        .forEach(([name, value]) => inputs[name].meta.setValue(value));
+    },
+    [inputs]
+  );
 
-  useEffect(() => {
-    if (didInit) return;
-    for (const n in initialValues) {
-      if (!inputs[n]) continue;
-      inputs[n].meta.setValue(initialValues[n]);
-    }
-    setDidInit(true);
-  }, [didInit]); // eslint-disable-line react-hooks/exhaustive-deps
+  React.useEffect(() => {
+    setValues(initialValues);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useChangeHandler({ changedInputs, inputs, handlers });
   useValidation({ changedInputs, inputs, validate });
-  return useSubmit({
+  const [onSubmit, isSubmitting] = useSubmit({
     handleSubmit,
     inputs,
     postSubmit,
     preSubmit,
     validate,
   });
+
+  // TODO: figure out if this is the best way to do this.
+  return React.useMemo(() => ({ onSubmit, isSubmitting, setValues, inputs }), [
+    inputs,
+    isSubmitting,
+    onSubmit,
+    setValues,
+  ]);
 }

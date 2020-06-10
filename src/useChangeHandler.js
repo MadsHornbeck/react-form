@@ -6,8 +6,8 @@ export default function useChangeHandler({
   handlers = {},
 }) {
   React.useEffect(() => {
-    changedInputs.forEach((name) => {
-      if (handlers[name]) handlers[name](inputs);
-    });
+    changedInputs
+      .filter((name) => handlers[name])
+      .forEach((name) => handlers[name](inputs));
   }, [changedInputs, handlers, inputs]);
 }

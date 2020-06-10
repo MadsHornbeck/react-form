@@ -5,13 +5,21 @@ function Input({ type, meta, label, ...input }, ref) {
     <div className="input">
       <label>
         {label}:
-        <input ref={ref} type={type} {...input} checked={input.value} />
+        <input
+          ref={ref}
+          type={type}
+          {...input}
+          checked={input.value}
+          className={[
+            meta.active && "active",
+            meta.touched && "touched",
+            meta.error && "error",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        />
       </label>
-      <div className="meta">
-        {meta.active && <div>Active</div>}
-        {meta.touched && <div>Touched</div>}
-        {meta.error && <div>{meta.error}</div>}
-      </div>
+      <div className="meta">{meta.error}</div>
     </div>
   );
 }

@@ -1,11 +1,4 @@
-import {
-  useCallback,
-  useDebugValue,
-  useEffect,
-  useMemo,
-  useState,
-  useRef,
-} from "react";
+import React from "react";
 
 import { noop, id, getEventValue } from "./util";
 
@@ -20,25 +13,25 @@ export default function useInput({
   validate = noop,
 } = {}) {
   // TODO: Try to find a better name than: `actualValue`.
-  const [actualValue, setActualValue] = useState(initialValue);
-  const formattedValue = useMemo(() => format(actualValue), [
+  const [actualValue, setActualValue] = React.useState(initialValue);
+  const formattedValue = React.useMemo(() => format(actualValue), [
     format,
     actualValue,
   ]);
-  const [touched, setTouched] = useState(false);
-  const [error, setError] = useState(undefined);
-  const [active, setActive] = useState(false);
-  const input = useRef({});
-  const ref = useRef();
+  const [touched, setTouched] = React.useState(false);
+  const [error, setError] = React.useState(undefined);
+  const [active, setActive] = React.useState(false);
+  const input = React.useRef({});
+  const ref = React.useRef();
 
-  const setValue = useCallback(
+  const setValue = React.useCallback(
     (value) => {
       setActualValue((prevValue) => parse(value, prevValue));
     },
     [parse]
   );
 
-  const onFocus = useCallback(
+  const onFocus = React.useCallback(
     (e) => {
       handleFocus(e); // TODO: do we want any arguments passed here?
       setTouched(true);
@@ -47,7 +40,7 @@ export default function useInput({
     [handleFocus]
   );
 
-  const onChange = useCallback(
+  const onChange = React.useCallback(
     (e) => {
       // TODO: do we want any arguments passed here?
       handleChange(e);
@@ -57,7 +50,7 @@ export default function useInput({
     [handleChange, setValue]
   );
 
-  const onBlur = useCallback(
+  const onBlur = React.useCallback(
     (e) => {
       // TODO: do we want any arguments passed here?
       handleBlur(e);
@@ -66,7 +59,7 @@ export default function useInput({
     [handleBlur]
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     const t = setTimeout(async () => {
       setError(await validate(actualValue));
       // TODO: allow for configuration of validation delay
@@ -76,7 +69,7 @@ export default function useInput({
     };
   }, [actualValue, validate, setError]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (ref.current && handleCursor) {
       const selection = handleCursor(actualValue, ref.current);
       // TODO: figure out how to handle case where a character in the middle is deleted.
@@ -84,9 +77,9 @@ export default function useInput({
     }
   }, [handleCursor, actualValue]);
 
-  useDebugValue(actualValue);
+  React.useDebugValue(actualValue);
 
-  const meta = useMemo(
+  const meta = React.useMemo(
     () => ({
       active,
       actualValue,
@@ -100,21 +93,21 @@ export default function useInput({
     [active, actualValue, error, setValue, touched]
   );
 
-  const showFormattedValue = handleCursor && parse !== id;
+  const formatWhileActive = handleCursor && format !== id && parse !== id;
   return Object.assign(input.current, {
     meta,
     onBlur,
     onChange,
     onFocus,
     ref,
-    value: active && !showFormattedValue ? actualValue : formattedValue,
+    value: active && !formatWhileActive ? actualValue : formattedValue,
   });
 }
 
 export function useMultipleSelect(a) {
   const f = useInput(a);
 
-  const onClick = useCallback(
+  const onClick = React.useCallback(
     (e) => {
       if (e.target.tagName === "OPTION" && !e.target.disabled) {
         f.meta.setValue(e.target.value);
