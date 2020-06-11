@@ -1,6 +1,6 @@
 {
   "name": "@hornbeck/react-form",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "author": {
     "name": "Mads Hornbeck",
@@ -21,6 +21,7 @@
   ],
   "main": "dist/index.js",
   "module": "dist/index.es.js",
+  "sideEffects": false,
   "devDependencies": {
     "@babel/core": "7.10.0",
     "@babel/preset-env": "7.10.0",
