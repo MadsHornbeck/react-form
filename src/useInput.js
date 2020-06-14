@@ -18,8 +18,9 @@ export default function useInput({
     format,
     actualValue,
   ]);
-  const [touched, setTouched] = React.useState(false);
   const [error, setError] = React.useState(undefined);
+  const [touched, setTouched] = React.useState(false);
+  const [visited, setVisited] = React.useState(false);
   const [active, setActive] = React.useState(false);
   const input = React.useRef({});
   const ref = React.useRef();
@@ -36,6 +37,7 @@ export default function useInput({
       handleFocus(e); // TODO: do we want any arguments passed here?
       setTouched(true);
       setActive(true);
+      setVisited(true);
     },
     [handleFocus]
   );
@@ -89,8 +91,9 @@ export default function useInput({
       setTouched,
       setValue,
       touched,
+      visited,
     }),
-    [active, actualValue, error, setValue, touched]
+    [active, actualValue, error, setValue, touched, visited]
   );
 
   const formatWhileActive = handleCursor && format !== id && parse !== id;

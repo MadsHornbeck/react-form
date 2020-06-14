@@ -14,6 +14,7 @@ function Input({ type, meta, label, ...input }, ref) {
             meta.active && "active",
             meta.touched && "touched",
             meta.error && "error",
+            meta.visited && "visited",
           ]
             .filter(Boolean)
             .join(" ")}
