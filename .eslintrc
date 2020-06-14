@@ -3,24 +3,16 @@
     "browser": true,
     "es6": true
   },
-  "parser": "babel-eslint",
   "parserOptions": {
     "sourceType": "module",
-    "ecmaVersion": 7,
-    "ecmaFeatures": {
-      "jsx": true
-    }
+    "ecmaVersion": 9
   },
   "settings": {
     "react": {
       "version": "latest"
     }
   },
-  "plugins": [
-    "react",
-    "react-hooks",
-    "prettier"
-  ],
+  "plugins": ["react", "react-hooks", "prettier"],
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",

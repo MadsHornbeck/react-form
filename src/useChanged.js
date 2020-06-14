@@ -2,7 +2,7 @@ import React from "react";
 
 import { mapObject } from "./util";
 
-const defaultSelect = (i) => i?.meta.actualValue;
+const defaultSelect = (i) => i.meta.actualValue;
 const defaultCompare = (a, b) => a !== b;
 
 export default function useChanged({
@@ -28,5 +28,6 @@ export default function useChanged({
       clearTimeout(t);
     };
   });
+
   return changedInputs;
 }

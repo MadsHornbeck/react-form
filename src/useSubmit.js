@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import React from "react";
 
 import { mapObject, noop, setErrors } from "./util";
 
@@ -9,9 +9,9 @@ export default function useSubmit({
   preSubmit = noop,
   validate = noop,
 }) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const onSubmit = useCallback(
+  const onSubmit = React.useCallback(
     async (e) => {
       e.preventDefault();
       if (isSubmitting) return;
