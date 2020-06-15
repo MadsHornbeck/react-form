@@ -9,6 +9,7 @@ export default function useInput({
   handleCursor,
   handleFocus = noop,
   initialValue = "", // TODO: maybe add a reset function to reset to initialValue
+  normalize = id,
   parse = id,
   validate = noop,
 } = {}) {
@@ -27,9 +28,9 @@ export default function useInput({
 
   const setValue = React.useCallback(
     (value) => {
-      setActualValue((prevValue) => parse(value, prevValue));
+      setActualValue((prevValue) => normalize(parse(value, prevValue)));
     },
-    [parse]
+    [normalize, parse]
   );
 
   const onFocus = React.useCallback(

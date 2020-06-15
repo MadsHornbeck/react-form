@@ -24,7 +24,7 @@ const phoneParse = (v) =>
     .join("") || "";
 
 const handleCursor = (v) => {
-  const l = v.length;
+  const l = String(v).length;
   const a = l <= 3 ? 4 : l <= 6 ? 6 : 7;
   return a + l;
 };
@@ -55,7 +55,11 @@ function SimpleForm() {
     handleCursor,
   });
   const sex = useInput();
-  const age = useInput({ initialValue: 20 });
+  const age = useInput({
+    initialValue: 20,
+    validate: isRequired,
+    normalize: Number,
+  });
   const canBuyAlcohol = useInput({ initialValue: false });
 
   const inputs = React.useMemo(
@@ -90,4 +94,4 @@ function SimpleForm() {
   );
 }
 
-export default SimpleForm;
+export default React.memo(SimpleForm);

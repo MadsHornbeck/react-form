@@ -23,6 +23,7 @@ Advanced
 
 - handleCursor
 - parse
+- normalize
 
 ### return
 
