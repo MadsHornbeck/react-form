@@ -19,6 +19,17 @@ export function setErrors(inputs, errors = {}) {
 
 // TODO: should probably be renamed
 export const entriesMap = (obj, fn) =>
-  Object.entries(obj).map(([k, v]) => [k, fn(v)]);
+  Object.entries(obj).map(([k, v]) => [k, fn(v, k)]);
 
 export const mapObject = (obj, fn) => Object.fromEntries(entriesMap(obj, fn));
+
+const compose = (arr) => (value, inputs) =>
+  arr.reduce((err, f) => (err ? err : f(value, inputs)), undefined);
+
+export const validateField = (f) => (typeof f === "function" ? f : compose(f));
+
+// TODO: reconsider this name
+export const handleValidate = (validate) => (values, inputs) =>
+  typeof validate === "function"
+    ? validate
+    : mapObject(validate, (f, name) => validateField(f)(values[name], inputs));

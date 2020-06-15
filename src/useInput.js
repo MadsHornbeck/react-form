@@ -1,6 +1,6 @@
 import React from "react";
 
-import { noop, id, getEventValue } from "./util";
+import { noop, id, getEventValue, validateField } from "./util";
 
 export default function useInput({
   format = id,
@@ -64,7 +64,7 @@ export default function useInput({
 
   React.useEffect(() => {
     const t = setTimeout(async () => {
-      setError(await validate(actualValue));
+      setError(await validateField(validate)(actualValue));
       // TODO: allow for configuration of validation delay
     }, 150);
     return () => {

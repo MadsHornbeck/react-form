@@ -66,3 +66,19 @@ Advanced
 - isSubmitting
 - onSubmit
 - setValues
+
+## validators
+
+- creditCard,
+- email,
+- greater,
+- guid,
+- max,
+- maxLength,
+- min,
+- minLength,
+- negative,
+- pattern,
+- positive,
+- required,
+- validateFn,
