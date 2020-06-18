@@ -5,6 +5,8 @@
 ## `useInput`
 
 ```js
+import { useInput } from "@hornbeck/react-form";
+
 function App() {
   const name = useInput();
 
@@ -19,9 +21,18 @@ function App() {
 ## `useForm`
 
 ```js
+import { useForm, useInput, validators } from "@hornbeck/react-form";
+
 function Form() {
-  const name = useInput();
-  const email = useInput();
+  const name = useInput({
+    validate: validators.required("Required"),
+  });
+  const email = useInput({
+    validate: [
+      validators.required("Required"),
+      validators.email("Must be a valid email")
+    ],
+  });
   const phone = useInput();
 
   const inputs = React.useMemo(
@@ -40,9 +51,9 @@ function Form() {
 
   return <div>
     <form onSubmit={form.onSubmit}>
-      <input {...name}>
-      <input {...email}>
-      <input {...phone}>
+      <input {...name} />
+      <input {...email} />
+      <input {...phone} />
       <button type="submit">Submit</button>
     </form>
 }

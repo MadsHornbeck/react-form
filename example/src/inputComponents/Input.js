@@ -12,8 +12,9 @@ function Input({ type, meta, label, ...input }, ref) {
           checked={input.value}
           className={[
             meta.active && "active",
-            meta.touched && "touched",
+            meta.dirty && "dirty",
             meta.error && "error",
+            meta.touched && "touched",
             meta.visited && "visited",
           ]
             .filter(Boolean)

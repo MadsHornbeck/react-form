@@ -21,14 +21,16 @@ export default function useInput({
   ]);
   const [error, setError] = React.useState(undefined);
   const [touched, setTouched] = React.useState(false);
-  const [visited, setVisited] = React.useState(false);
   const [active, setActive] = React.useState(false);
   const input = React.useRef({});
   const ref = React.useRef();
 
   const setValue = React.useCallback(
     (value) => {
-      setActualValue((prevValue) => normalize(parse(value, prevValue)));
+      setActualValue((prevValue) =>
+        // TODO: maybe format the prevValue passed to parse
+        normalize(parse(value, prevValue), prevValue)
+      );
     },
     [normalize, parse]
   );
@@ -36,9 +38,7 @@ export default function useInput({
   const onFocus = React.useCallback(
     (e) => {
       handleFocus(e); // TODO: do we want any arguments passed here?
-      setTouched(true);
       setActive(true);
-      setVisited(true);
     },
     [handleFocus]
   );
@@ -58,6 +58,7 @@ export default function useInput({
       // TODO: do we want any arguments passed here?
       handleBlur(e);
       setActive(false);
+      setTouched(true);
     },
     [handleBlur]
   );
@@ -82,19 +83,23 @@ export default function useInput({
 
   React.useDebugValue(actualValue);
 
+  const dirty = actualValue !== initialValue;
   const meta = React.useMemo(
     () => ({
       active,
       actualValue,
+      dirty,
       error,
-      setActive,
+      invalid: !!error,
+      pristine: !dirty,
       setError,
       setTouched,
       setValue,
       touched,
-      visited,
+      valid: !error,
+      visited: touched || active,
     }),
-    [active, actualValue, error, setValue, touched, visited]
+    [active, actualValue, dirty, error, setValue, touched]
   );
 
   const formatWhileActive = handleCursor && format !== id && parse !== id;
@@ -108,20 +113,23 @@ export default function useInput({
   });
 }
 
-export function useMultipleSelect(a) {
-  const f = useInput(a);
+export function useMultipleSelect(props) {
+  const input = useInput(props);
 
   const onClick = React.useCallback(
     (e) => {
       if (e.target.tagName === "OPTION" && !e.target.disabled) {
-        f.meta.setValue(e.target.value);
+        const handleChange = props.handleChange;
+        const setValue = input.meta.setValue;
+        handleChange(e);
+        setValue(e.target.value);
       }
     },
-    [f.meta]
+    [input.meta.setValue, props.handleChange]
   );
 
   return {
-    ...f,
+    ...input,
     onClick,
     onChange: noop,
   };
