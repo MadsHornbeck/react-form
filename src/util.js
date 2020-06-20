@@ -17,11 +17,8 @@ export function setErrors(inputs, errors = {}) {
   return !!errs.length;
 }
 
-// TODO: should probably be renamed
-export const entriesMap = (obj, fn) =>
-  Object.entries(obj).map(([k, v]) => [k, fn(v, k)]);
-
-export const mapObject = (obj, fn) => Object.fromEntries(entriesMap(obj, fn));
+export const mapObject = (obj, fn) =>
+  Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fn(v, k)]));
 
 const compose = (arr) => (value, inputs) =>
   arr.reduce((err, f) => (err ? err : f(value, inputs)), undefined);

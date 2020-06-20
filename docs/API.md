@@ -27,7 +27,7 @@ Advanced
 
 ### return
 
-input
+input - the object returned from this hook will have stable referential identity.
 
 - input props
   - value - the value of the input
@@ -51,9 +51,9 @@ input
 
 Basic
 
-- inputs
+- inputs - object with all the inputs in your form, use the names you want for your values.
 - handleSubmit - is called with values from all inputs when form is submitted
-- initialValues
+- initialValues - object of values that will be the initial values, this will overwrite any value set on the individual inputs
 - validate - a function or validate the inputs, should return an object with `{ [inputName]: error }`
 
 Events
