@@ -15,7 +15,6 @@ export default function useSubmit({
     async (e) => {
       e.preventDefault();
       if (isSubmitting) return;
-      console.log("submit");
       for (const name in inputs) {
         inputs[name].meta.setTouched(true);
       }
@@ -25,12 +24,7 @@ export default function useSubmit({
       const hasError =
         Object.values(inputs).some((i) => i.meta.error) ||
         setErrors(inputs, await validate(values));
-
-      if (hasError) {
-        const errors = mapObject(inputs, (i) => i.meta.error);
-        console.log("hasError", errors);
-        return;
-      }
+      if (hasError) return;
 
       preSubmit(values);
       setIsSubmitting(true);
@@ -38,7 +32,6 @@ export default function useSubmit({
       setIsSubmitting(false);
       setErrors(inputs, submitErrors);
       postSubmit(values, submitErrors);
-      console.log("Post-submit", values, submitErrors);
     },
     [handleSubmit, inputs, isSubmitting, postSubmit, preSubmit, validate]
   );

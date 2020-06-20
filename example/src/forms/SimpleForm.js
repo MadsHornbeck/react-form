@@ -4,7 +4,6 @@ import { useInput, useForm, validators } from "@hornbeck/react-form";
 import { Input, Radio } from "../inputComponents";
 import { wait, genId } from "../util";
 
-console.log(validators);
 const sexOptions = ["Female", "Male", "Other"];
 
 const isRequired = validators.required("Required");

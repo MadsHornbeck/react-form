@@ -9,10 +9,8 @@ const pattern = (regex) => {
   return validateFn((value) => regex.test(value));
 };
 
-const required = (message) => (value) => {
-  console.log(value);
-  return value != null && value !== "" ? undefined : message;
-};
+const required = (message) => (value) =>
+  value != null && value !== "" ? undefined : message;
 
 const maxLength = (length, message) =>
   validateFn((v) => v != null && String(v).length >= length)(message);
