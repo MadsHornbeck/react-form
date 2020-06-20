@@ -1,6 +1,6 @@
 import React from "react";
 
-import { emptyObj, mapObject, noop } from "./util";
+import { emptyObj, mapObject, noop, flattenInputs } from "./util";
 
 export default function useSubmit({
   handleSubmit,
@@ -17,7 +17,7 @@ export default function useSubmit({
       e.preventDefault();
       if (isSubmitting) return;
       const inputErrors = await Promise.all(
-        Object.values(inputs).map((i) => {
+        flattenInputs(inputs).map(([, i]) => {
           i.meta.setTouched(true);
           return i.meta.validate();
         })

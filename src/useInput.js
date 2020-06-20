@@ -1,6 +1,6 @@
 import React from "react";
 
-import { noop, id, getEventValue, validateField } from "./util";
+import { noop, id, getEventValue, validateField, inputSymbol } from "./util";
 
 export default function useInput({
   format = id,
@@ -24,7 +24,7 @@ export default function useInput({
   const [active, setActive] = React.useState(false);
   const [validating, setValidating] = React.useState(false);
   const form = React.useRef({ errors: {} });
-  const input = React.useRef({});
+  const input = React.useRef({ [inputSymbol]: true });
   const ref = React.useRef();
 
   const setValue = React.useCallback(

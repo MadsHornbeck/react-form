@@ -60,9 +60,20 @@ function SimpleForm() {
   });
   const canBuyAlcohol = useInput({ initialValue: true });
 
+  const [address, Address] = useAddress();
+
   const inputs = React.useMemo(
-    () => ({ age, canBuyAlcohol, email, favoriteColor, name, phone, sex }),
-    [age, canBuyAlcohol, email, favoriteColor, name, phone, sex]
+    () => ({
+      age,
+      canBuyAlcohol,
+      email,
+      favoriteColor,
+      name,
+      phone,
+      sex,
+      address,
+    }),
+    [age, canBuyAlcohol, email, favoriteColor, name, phone, sex, address]
   );
 
   const form = useForm({
@@ -97,6 +108,7 @@ function SimpleForm() {
         label="Can buy alcohol"
         disabled={isUnderage}
       />
+      <Address />
       <button type="submit" disabled={form.isSubmitting}>
         {form.isSubmitting ? "Is submitting" : "Submit"}
       </button>
@@ -105,3 +117,34 @@ function SimpleForm() {
 }
 
 export default React.memo(SimpleForm);
+
+const useAddress = () => {
+  const line1 = useInput();
+  const line2 = useInput();
+  const postcode = useInput();
+  const city = useInput();
+
+  const render = React.useCallback(
+    () => (
+      <div>
+        <Input {...line1} label="AddressLine1" />
+        <Input {...line2} label="AddressLine2" />
+        <Input {...postcode} label="Postcode" />
+        <Input {...city} label="City" />
+      </div>
+    ),
+    [line1, line2, postcode, city]
+  );
+
+  const address = React.useMemo(
+    () => ({
+      line1,
+      line2,
+      postcode,
+      city,
+    }),
+    [line1, line2, postcode, city]
+  );
+
+  return React.useMemo(() => [address, render], [address, render]);
+};

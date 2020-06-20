@@ -3,7 +3,7 @@ import React from "react";
 import useChanged from "./useChanged";
 import useSubmit from "./useSubmit";
 import useValidation from "./useValidation";
-import { mapObject } from "./util";
+import { mapObject, flattenInputs, get } from "./util";
 
 export default function useForm({
   handleSubmit,
@@ -30,7 +30,7 @@ export default function useForm({
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
-    Object.entries(inputs).forEach(([name, input]) => {
+    flattenInputs(inputs).forEach(([name, input]) => {
       input.name = name;
       input.meta.form.current = form.current;
     });
@@ -54,7 +54,8 @@ export default function useForm({
     () =>
       mapObject(
         inputs,
-        (i, k) => i.meta.inputError || formErrors[k] || submitErrors[k]
+        (i, k) =>
+          i.meta.inputError || get(formErrors, k) || get(submitErrors, k)
       ),
     [changed, formErrors, inputs, submitErrors] // eslint-disable-line react-hooks/exhaustive-deps
   );
