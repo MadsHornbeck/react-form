@@ -26,7 +26,10 @@ const compose = (arr) => (value, inputs) =>
 export const validateField = (f) => (typeof f === "function" ? f : compose(f));
 
 // TODO: reconsider this name
-export const handleValidate = (validate) => (values, inputs) =>
+export const handleValidate = (validate) =>
   typeof validate === "function"
     ? validate
-    : mapObject(validate, (f, name) => validateField(f)(values[name], inputs));
+    : (values, inputs) =>
+        mapObject(validate, (f, name) =>
+          validateField(f)(values[name], inputs)
+        );

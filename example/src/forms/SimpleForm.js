@@ -2,13 +2,13 @@ import React from "react";
 import { useInput, useForm, validators } from "@hornbeck/react-form";
 
 import { Input, Radio } from "../inputComponents";
-import { wait, genId } from "../util";
+import { wait } from "../util";
 
 const sexOptions = ["Female", "Male", "Other"];
 
 const isRequired = validators.required("Required");
 
-const isEmail = (v) => validators.email("Must be a valid email");
+const isEmail = validators.email("Must be a valid email");
 
 const phoneFormat = (v) => {
   const local = v.slice(0, 3).padEnd(3, "_");
@@ -36,8 +36,11 @@ const handlers = {
   },
 };
 
-const handleSubmit = () =>
-  wait({ name: genId(), sex: genId(), email: genId() });
+const handleSubmit = (values) =>
+  wait({
+    name: values.name === "Paul" ? "Cannot be Paul" : undefined,
+    email: /\.com/.test(values.email) ? undefined : "Must be a .com domain",
+  });
 
 function SimpleForm() {
   const name = useInput({
