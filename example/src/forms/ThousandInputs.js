@@ -2,17 +2,17 @@ import React from "react";
 
 import { useInput, validators, useForm } from "@hornbeck/react-form";
 
+const validate = [
+  validators.required("Required"),
+  validators.email("Invalid email"),
+];
+
 function ThousandInputs() {
   // Warning! Don't actually do this, it's only to test performance.
   const inputArr = Array.from({ length: 1000 }).map((_, i) => [
     `input-${i}`,
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    useInput({
-      validate: [
-        validators.required("Required"),
-        validators.email("Invalid email"),
-      ],
-    }),
+    useInput({ validate }),
   ]);
   const form = useForm({
     inputs: Object.fromEntries(inputArr),
