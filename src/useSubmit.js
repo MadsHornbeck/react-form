@@ -16,7 +16,10 @@ export default function useSubmit({
       e.preventDefault();
       if (isSubmitting) return;
       const errors = await Promise.all(
-        Object.values(inputs).map((i) => i.meta.validate())
+        Object.values(inputs).map((i) => {
+          i.meta.setTouched(true);
+          return i.meta.validate();
+        })
       );
       const values = mapObject(inputs, (i) => i.meta.actualValue);
       const hasError =

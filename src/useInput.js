@@ -66,7 +66,6 @@ export default function useInput({
   // TODO: find a better name for this
   const _validate = React.useCallback(() => {
     const error = validateField(validate)(actualValue);
-    setTouched(true);
     if (error instanceof Promise) {
       error.then((err) => {
         setError(err);
