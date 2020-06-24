@@ -15,15 +15,12 @@ export default function useSubmit({
     async (e) => {
       e.preventDefault();
       if (isSubmitting) return;
-      for (const name in inputs) {
-        inputs[name].meta.setTouched(true);
-      }
+      const errors = await Promise.all(
+        Object.values(inputs).map((i) => i.meta.validate())
+      );
       const values = mapObject(inputs, (i) => i.meta.actualValue);
-
-      // TODO: maybe handle input level error promise
       const hasError =
-        Object.values(inputs).some((i) => i.meta.error) ||
-        setErrors(inputs, await validate(values));
+        errors.some(Boolean) || setErrors(inputs, await validate(values));
       if (hasError) return;
 
       preSubmit(values);

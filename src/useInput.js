@@ -63,15 +63,28 @@ export default function useInput({
     [handleBlur]
   );
 
+  // TODO: find a better name for this
+  const _validate = React.useCallback(() => {
+    const error = validateField(validate)(actualValue);
+    setTouched(true);
+    if (error instanceof Promise) {
+      error.then((err) => {
+        setError(err);
+      });
+    } else {
+      setError(error);
+    }
+    return error;
+  }, [actualValue, validate]);
+
   React.useEffect(() => {
-    const t = setTimeout(async () => {
-      setError(await validateField(validate)(actualValue));
-      // TODO: allow for configuration of validation delay
-    }, 150);
+    if (!active && !touched) return;
+    // TODO: allow for configuration of validation delay
+    const t = setTimeout(_validate, 150);
     return () => {
       clearTimeout(t);
     };
-  }, [actualValue, validate, setError]);
+  }, [active, _validate, touched]);
 
   React.useEffect(() => {
     if (ref.current && handleCursor) {
@@ -97,9 +110,10 @@ export default function useInput({
       setValue,
       touched,
       valid: !error,
+      validate: _validate,
       visited: touched || active,
     }),
-    [active, actualValue, dirty, error, setValue, touched]
+    [active, actualValue, dirty, error, _validate, setValue, touched]
   );
 
   const formatWhileActive = handleCursor && format !== id && parse !== id;
