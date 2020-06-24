@@ -32,10 +32,6 @@
   "peerDependencies": {
     "react": "^16.8.0"
   },
-  "scripts": {
-    "build": "rollup -c",
-    "start": "rollup -c -w"
-  },
   "files": [
     "src"
   ]
