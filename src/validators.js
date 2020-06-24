@@ -13,10 +13,10 @@ const required = (message) => (value) =>
   value != null && value !== "" ? undefined : message;
 
 const maxLength = (length, message) =>
-  validateFn((v) => v != null && String(v).length >= length)(message);
+  validateFn((v) => v != null && String(v).length <= length)(message);
 
 const minLength = (length, message) =>
-  validateFn((v) => v != null && String(v).length <= length)(message);
+  validateFn((v) => v != null && String(v).length >= length)(message);
 
 const max = (max, message) => validateFn((v) => v <= max)(message);
 
