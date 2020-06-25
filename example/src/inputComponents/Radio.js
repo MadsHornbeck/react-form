@@ -22,9 +22,7 @@ function Input({ options, meta, label, ...input }, ref) {
         </div>
       </label>
       <div className="meta">
-        {meta.active && <div>Active</div>}
-        {meta.touched && <div>Touched</div>}
-        {meta.error && <div>{meta.error}</div>}
+        {meta.touched && meta.error && <div>{meta.error}</div>}
       </div>
     </div>
   );
