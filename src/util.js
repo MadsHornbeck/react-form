@@ -16,6 +16,8 @@ export const getEventValue = (e) => {
   }
 };
 
+export const maskSymbol = Symbol("Mask");
+
 export const mapObject = (obj, fn) =>
   Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fn(v, k)]));
 

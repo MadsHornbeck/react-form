@@ -8,6 +8,7 @@ import DynamicInputs from "./forms/DynamicInputs";
 import ChangeHandlers from "./forms/ChangeHandlers";
 import Login from "./forms/Login";
 import ConditionalInputs from "./forms/ConditionalInputs";
+import Mask from "./forms/Mask";
 
 const forms = {
   SimpleForm,
@@ -16,6 +17,7 @@ const forms = {
   ChangeHandlers,
   Login,
   ConditionalInputs,
+  Mask,
 };
 
 function App() {

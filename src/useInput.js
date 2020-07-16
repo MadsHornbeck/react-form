@@ -1,12 +1,12 @@
 import React from "react";
 
-import { noop, id, getEventValue, validateField } from "./util";
+import { getEventValue, id, maskSymbol, noop, validateField } from "./util";
 
 export default function useInput({
+  [maskSymbol]: mask,
   format = id,
   handleBlur = noop,
   handleChange = noop,
-  handleCursor,
   handleFocus = noop,
   initialValue = "", // TODO: maybe add a reset function to reset to initialValue
   normalize = id,
@@ -15,10 +15,10 @@ export default function useInput({
 } = {}) {
   // TODO: Try to find a better name than: `actualValue`.
   const [actualValue, setActualValue] = React.useState(initialValue);
-  const formattedValue = React.useMemo(() => format(actualValue), [
-    format,
-    actualValue,
-  ]);
+  const formattedValue = React.useMemo(
+    () => (mask ? mask.format : format)(actualValue),
+    [mask, format, actualValue]
+  );
   const [inputError, setError] = React.useState(undefined);
   const [touched, setTouched] = React.useState(false);
   const [active, setActive] = React.useState(false);
@@ -31,10 +31,10 @@ export default function useInput({
     (value) => {
       setActualValue((prevValue) =>
         // TODO: maybe format the prevValue passed to parse
-        parse(value, prevValue)
+        (mask ? mask.parse : parse)(value, prevValue)
       );
     },
-    [parse]
+    [mask, parse]
   );
 
   const onFocus = React.useCallback(
@@ -92,12 +92,11 @@ export default function useInput({
   }, [active, touched, validate]);
 
   React.useEffect(() => {
-    if (ref.current && handleCursor) {
-      const selection = handleCursor(actualValue, ref.current);
+    if (ref.current && mask) {
       // TODO: figure out how to handle case where a character in the middle is deleted.
-      ref.current.setSelectionRange(selection, selection);
+      mask.handleCursor(ref.current, actualValue);
     }
-  }, [handleCursor, actualValue]);
+  }, [actualValue, mask]);
 
   React.useDebugValue(actualValue);
 
@@ -135,13 +134,12 @@ export default function useInput({
     ]
   );
 
-  const formatWhileActive = handleCursor && format !== id && parse !== id;
   return Object.assign(input.current, {
     meta,
     onBlur,
     onChange,
     onFocus,
     ref,
-    value: active && !formatWhileActive ? actualValue : formattedValue,
+    value: active && !mask ? actualValue : formattedValue,
   });
 }
