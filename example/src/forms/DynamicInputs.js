@@ -1,5 +1,6 @@
 import React from "react";
-import { useForm, useInput, validators } from "@hornbeck/react-form";
+import { useForm, useInput } from "@hornbeck/react-form";
+import * as validators from "@hornbeck/react-form/validators";
 
 import { Input } from "../inputComponents";
 
