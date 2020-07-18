@@ -9,7 +9,7 @@
 
 Basic
 
-- initialValue - the value the input will initially have
+- initialValue - the value the input will initially have. Updating this will not update the value of the field, to achieve this use the `meta.setValue` on the input object.
 - validate - a function or array of functions that validate the input
 - format - will format the value and display it when the input is not active
 - parse - values are parsed then normalized before set in input state
@@ -95,6 +95,7 @@ const validate = [
 - pattern
 - positive
 - negative
+- smaller
 - greater
 
 - validateFn - a helper for creating your own validation functions

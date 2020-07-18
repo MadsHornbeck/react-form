@@ -1,7 +1,25 @@
 // TODO: add unit tests for all validation functions
 
-const validateFn = (predicate) => (message) => (value) =>
-  value === "" || predicate(value) ? undefined : message;
+function validateFn(predicate, message, value) {
+  if (typeof predicate !== "function")
+    throw new TypeError("predicate is not a function");
+
+  if (
+    arguments.length < validateFn.length ||
+    arguments.length <= predicate.length
+  )
+    return (...args) => validateFn(...arguments, ...args);
+
+  const valid = predicate(value);
+  if (typeof valid !== "function")
+    return value === "" || valid ? undefined : message;
+
+  const args = [...arguments].slice(1);
+  return validateFn(
+    predicate(...args.slice(0, predicate.length)),
+    ...args.slice(predicate.length)
+  );
+}
 
 const pattern = (regex) => {
   if (!(regex instanceof RegExp))
@@ -12,18 +30,18 @@ const pattern = (regex) => {
 const required = (message) => (value) =>
   value != null && value !== "" ? undefined : message;
 
-const maxLength = (length, message) =>
-  validateFn((v) => v != null && String(v).length <= length)(message);
+const maxLength = validateFn((length) => (v) =>
+  v != null && String(v).length <= length
+);
+const minLength = validateFn((length) => (v) =>
+  v != null && String(v).length >= length
+);
 
-const minLength = (length, message) =>
-  validateFn((v) => v != null && String(v).length >= length)(message);
+const max = validateFn((max) => (v) => v <= max);
+const min = validateFn((min) => (v) => v >= min);
 
-const max = (max, message) => validateFn((v) => v <= max)(message);
-
-const min = (min, message) => validateFn((v) => v >= min)(message);
-
-const greater = (input, message) =>
-  validateFn((v) => v < input.meta.actualValue)(message);
+const smaller = validateFn((input) => (v) => v < input.meta.actualValue);
+const greater = validateFn((input) => (v) => v > input.meta.actualValue);
 
 const negative = validateFn((v) => v < 0);
 const positive = validateFn((v) => v > 0);
@@ -42,7 +60,7 @@ const luhnAlgo = (ds) => {
 
 const creditCard = validateFn((str) => {
   const arr = [...str].map(Number);
-  return !arr.some(Number.isNaN) && luhnAlgo(arr);
+  return !!arr.length && !arr.some(Number.isNaN) && luhnAlgo(arr);
 });
 
 const guid = validateFn(
@@ -71,5 +89,6 @@ export default {
   pattern,
   positive,
   required,
+  smaller,
   validateFn,
 };
