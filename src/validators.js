@@ -1,6 +1,6 @@
 // TODO: add unit tests for all validation functions
 
-function validateFn(predicate, message, value) {
+export function /*#__PURE__*/ validateFn(predicate, message, value) {
   if (typeof predicate !== "function")
     throw new TypeError("predicate is not a function");
 
@@ -21,32 +21,37 @@ function validateFn(predicate, message, value) {
   );
 }
 
-const pattern = (regex) => {
+export const pattern = /*#__PURE__*/ (regex) => {
   if (!(regex instanceof RegExp))
     throw new Error(`${regex} is not a valid regex`);
   return validateFn((value) => regex.test(value));
 };
 
-const required = (message) => (value) =>
+export const required = /*#__PURE__*/ (message) => (value) =>
   value != null && value !== "" ? undefined : message;
 
-const maxLength = validateFn((length) => (v) =>
+export const maxLength = /*#__PURE__*/ validateFn((length) => (v) =>
   v != null && String(v).length <= length
 );
-const minLength = validateFn((length) => (v) =>
+
+export const minLength = /*#__PURE__*/ validateFn((length) => (v) =>
   v != null && String(v).length >= length
 );
 
-const max = validateFn((max) => (v) => v <= max);
-const min = validateFn((min) => (v) => v >= min);
+export const max = /*#__PURE__*/ validateFn((max) => (v) => v <= max);
+export const min = /*#__PURE__*/ validateFn((min) => (v) => v >= min);
 
-const smaller = validateFn((input) => (v) => v < input.meta.actualValue);
-const greater = validateFn((input) => (v) => v > input.meta.actualValue);
+export const smaller = /*#__PURE__*/ validateFn((input) => (v) =>
+  v < input.meta.actualValue
+);
+export const greater = /*#__PURE__*/ validateFn((input) => (v) =>
+  v > input.meta.actualValue
+);
 
-const negative = validateFn((v) => v < 0);
-const positive = validateFn((v) => v > 0);
+export const negative = /*#__PURE__*/ (v) => v < 0;
+export const positive = /*#__PURE__*/ (v) => v > 0;
 
-const email = pattern(/^[^\s@]+@[^\s@]+\.[^\s@.]+$/i);
+export const email = /*#__PURE__*/ pattern(/^[^\s@]+@[^\s@]+\.[^\s@.]+$/i);
 
 // https://en.wikipedia.org/wiki/Luhn_algorithm
 const luhnAlgo = (ds) => {
@@ -58,12 +63,12 @@ const luhnAlgo = (ds) => {
   return sum % 10 === 0;
 };
 
-const creditCard = validateFn((str) => {
+export const creditCard = /*#__PURE__*/ validateFn((str) => {
   const arr = [...str].map(Number);
   return !!arr.length && !arr.some(Number.isNaN) && luhnAlgo(arr);
 });
 
-const guid = validateFn(
+export const guid = /*#__PURE__*/ validateFn(
   (str) =>
     // Can guids even be wrapped in []?
     /(^{.*}$|^\(.*\)$|^\[.*\]$|^[^([{].*[^}\])]$)/.test(str) &&
@@ -74,21 +79,3 @@ const guid = validateFn(
 
 // TODO
 // const isoDate = () => {};
-
-// TODO: consider if this is the best way to export this.
-export default {
-  creditCard,
-  email,
-  greater,
-  guid,
-  max,
-  maxLength,
-  min,
-  minLength,
-  negative,
-  pattern,
-  positive,
-  required,
-  smaller,
-  validateFn,
-};

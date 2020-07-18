@@ -1,5 +1,6 @@
 import React from "react";
-import { useInput, useForm, validators } from "@hornbeck/react-form";
+import { useInput, useForm } from "@hornbeck/react-form";
+import * as validators from "@hornbeck/react-form/validators";
 
 import { Input, Radio } from "../inputComponents";
 import { wait } from "../util";
@@ -7,8 +8,6 @@ import { wait } from "../util";
 const sexOptions = ["Female", "Male", "Other"];
 
 const isRequired = validators.required("Required");
-
-const isEmail = validators.email("Must be a valid email");
 
 const phoneFormat = (v) => {
   const local = v.slice(0, 3).padEnd(3, "_");
@@ -36,6 +35,8 @@ const handlers = {
   },
 };
 
+const emailValidate = [isRequired, validators.email("Must be a valid email")];
+
 const handleSubmit = (values) =>
   wait({
     name: values.name === "Paul" ? "Cannot be Paul" : undefined,
@@ -48,7 +49,7 @@ function SimpleForm() {
     initialValue: "John Doe",
   });
   const email = useInput({
-    validate: [isRequired, isEmail],
+    validate: emailValidate,
     initialValue: "john.doe@example.com",
   });
   const phone = useInput({

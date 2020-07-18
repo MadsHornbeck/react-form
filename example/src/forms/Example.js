@@ -1,5 +1,6 @@
 import React from "react";
-import { useInput, useForm, validators } from "@hornbeck/react-form";
+import { useInput, useForm } from "@hornbeck/react-form";
+import * as validators from "@hornbeck/react-form/validators";
 
 function Example() {
   const username = useInput({
