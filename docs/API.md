@@ -32,7 +32,7 @@ input - the object returned from this hook will have stable referential identity
 - input props
   - value - the value of the input
 - meta
-  - error - the error as returned from the validate function
+  - error - error for the input, either from input, form, or submit validation
   - active - true when the input has focus
   - touched - whenever an input is blurred touched is set to true
   - visited - true if input has ever had focus
@@ -45,6 +45,8 @@ input - the object returned from this hook will have stable referential identity
   - setError - allows for the setting of the input error
   - setTouched - allows for the setting the input as touched
   - setValue - allows for the setting of the input value
+  - form - reference to the form object the input is used in
+  - inputError - the input level error
 
 ## `useForm`
 
@@ -72,6 +74,10 @@ Advanced
 - isSubmitting - is true when submit is called and not finished in case of async submit
 - onSubmit - should be passed to form. Alternatively can be called seperately
 - setValues - allows for setting of all values in form
+- errors - object containing all errors for all field as `{[inputName]: error}`
+- formErrors - object containing all form level errors
+- submitErrors - object containing all submit level errors
+- validate - function that validates the form, returns true if the form has no errors otherwise false.
 
 ## validators
 

@@ -4,6 +4,7 @@ import useChangeHandler from "./useChangeHandler";
 import useChanged from "./useChanged";
 import useSubmit from "./useSubmit";
 import useValidation from "./useValidation";
+import { mapObject } from "./util";
 
 export default function useForm({
   handleSubmit,
@@ -12,9 +13,10 @@ export default function useForm({
   inputs,
   postSubmit,
   preSubmit,
-  validate,
+  validate: validateFn,
 }) {
   const changedInputs = useChanged({ inputs });
+  const form = React.useRef({});
 
   const setValues = React.useCallback(
     (values) => {
@@ -29,9 +31,21 @@ export default function useForm({
     setValues(initialValues);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  React.useEffect(() => {
+    Object.entries(inputs).forEach(([name, input]) => {
+      input.name = name;
+      input.meta.form.current = form.current;
+    });
+  }, [inputs]);
+
   useChangeHandler({ changedInputs, inputs, handlers });
-  useValidation({ changedInputs, inputs, validate });
-  const [onSubmit, isSubmitting] = useSubmit({
+  const [formErrors, validate] = useValidation({
+    changedInputs,
+    inputs,
+    validate: validateFn,
+  });
+
+  const [onSubmit, isSubmitting, submitErrors] = useSubmit({
     handleSubmit,
     inputs,
     postSubmit,
@@ -39,11 +53,23 @@ export default function useForm({
     validate,
   });
 
-  // TODO: figure out if this is the best way to do this.
-  return React.useMemo(() => ({ inputs, isSubmitting, onSubmit, setValues }), [
+  const errors = React.useMemo(
+    () =>
+      mapObject(
+        inputs,
+        (i, k) => i.meta.inputError || formErrors[k] || submitErrors[k]
+      ),
+    [changedInputs, formErrors, inputs, submitErrors] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
+  return Object.assign(form.current, {
+    errors,
+    formErrors,
     inputs,
     isSubmitting,
     onSubmit,
     setValues,
-  ]);
+    submitErrors,
+    validate,
+  });
 }

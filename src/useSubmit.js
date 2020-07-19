@@ -1,6 +1,6 @@
 import React from "react";
 
-import { mapObject, noop, setErrors } from "./util";
+import { mapObject, noop } from "./util";
 
 export default function useSubmit({
   handleSubmit,
@@ -10,31 +10,32 @@ export default function useSubmit({
   validate = noop,
 }) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [errors, setErrors] = React.useState({});
 
   const onSubmit = React.useCallback(
     async (e) => {
       e.preventDefault();
       if (isSubmitting) return;
-      const errors = await Promise.all(
+      const inputErrors = await Promise.all(
         Object.values(inputs).map((i) => {
           i.meta.setTouched(true);
           return i.meta.validate();
         })
       );
-      const values = mapObject(inputs, (i) => i.meta.actualValue);
-      const hasError =
-        errors.some(Boolean) || setErrors(inputs, await validate(values));
-      if (hasError) return;
 
+      if (inputErrors.some(Boolean) || !(await validate())) return;
+
+      const values = mapObject(inputs, (i) => i.meta.actualValue);
       preSubmit(values);
       setIsSubmitting(true);
+      setErrors({});
       const submitErrors = await handleSubmit(values);
       setIsSubmitting(false);
-      setErrors(inputs, submitErrors);
+      setErrors(submitErrors);
       postSubmit(values, submitErrors);
     },
     [handleSubmit, inputs, isSubmitting, postSubmit, preSubmit, validate]
   );
 
-  return [onSubmit, isSubmitting];
+  return [onSubmit, isSubmitting, errors];
 }

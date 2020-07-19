@@ -11,12 +11,6 @@ export const getEventValue = (e) => {
   }
 };
 
-export function setErrors(inputs, errors = {}) {
-  const errs = Object.entries(errors).filter(([name]) => inputs[name]);
-  errs.forEach(([name, error]) => inputs[name].meta.setError(error));
-  return !!errs.length;
-}
-
 export const mapObject = (obj, fn) =>
   Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fn(v, k)]));
 

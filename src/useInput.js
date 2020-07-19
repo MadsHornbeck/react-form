@@ -19,10 +19,11 @@ export default function useInput({
     format,
     actualValue,
   ]);
-  const [error, setError] = React.useState(undefined);
+  const [inputError, setError] = React.useState(undefined);
   const [touched, setTouched] = React.useState(false);
   const [active, setActive] = React.useState(false);
   const [validating, setValidating] = React.useState(false);
+  const form = React.useRef({ errors: {} });
   const input = React.useRef({});
   const ref = React.useRef();
 
@@ -99,6 +100,7 @@ export default function useInput({
 
   React.useDebugValue(actualValue);
 
+  const error = inputError || form.current.errors[input.current.name];
   const dirty = actualValue !== initialValue;
   const meta = React.useMemo(
     () => ({
@@ -106,6 +108,8 @@ export default function useInput({
       actualValue,
       dirty,
       error,
+      form,
+      inputError,
       invalid: !!error,
       pristine: !dirty,
       setError,
@@ -117,7 +121,17 @@ export default function useInput({
       validating,
       visited: touched || active,
     }),
-    [active, actualValue, dirty, error, setValue, touched, validate, validating]
+    [
+      active,
+      actualValue,
+      dirty,
+      error,
+      inputError,
+      setValue,
+      touched,
+      validate,
+      validating,
+    ]
   );
 
   const formatWhileActive = handleCursor && format !== id && parse !== id;
