@@ -11,7 +11,7 @@ export default function useInput({
   initialValue = "", // TODO: maybe add a reset function to reset to initialValue
   normalize = id,
   parse = id,
-  validate = noop,
+  validate: validateFn = noop,
 } = {}) {
   // TODO: Try to find a better name than: `actualValue`.
   const [actualValue, setActualValue] = React.useState(initialValue);
@@ -22,6 +22,7 @@ export default function useInput({
   const [error, setError] = React.useState(undefined);
   const [touched, setTouched] = React.useState(false);
   const [active, setActive] = React.useState(false);
+  const [validating, setValidating] = React.useState(false);
   const input = React.useRef({});
   const ref = React.useRef();
 
@@ -29,10 +30,10 @@ export default function useInput({
     (value) => {
       setActualValue((prevValue) =>
         // TODO: maybe format the prevValue passed to parse
-        normalize(parse(value, prevValue), prevValue)
+        parse(value, prevValue)
       );
     },
-    [normalize, parse]
+    [parse]
   );
 
   const onFocus = React.useCallback(
@@ -59,31 +60,34 @@ export default function useInput({
       handleBlur(e);
       setActive(false);
       setTouched(true);
+      setActualValue(normalize);
     },
-    [handleBlur]
+    [handleBlur, normalize]
   );
 
   // TODO: find a better name for this
-  const _validate = React.useCallback(() => {
-    const error = validateField(validate)(actualValue);
+  const validate = React.useCallback(() => {
+    const error = validateField(validateFn)(actualValue);
     if (error instanceof Promise) {
+      setValidating(true);
       error.then((err) => {
         setError(err);
+        setValidating(false);
       });
     } else {
       setError(error);
     }
     return error;
-  }, [actualValue, validate]);
+  }, [actualValue, validateFn]);
 
   React.useEffect(() => {
     if (!active && !touched) return;
     // TODO: allow for configuration of validation delay
-    const t = setTimeout(_validate, 150);
+    const t = setTimeout(validate, 150);
     return () => {
       clearTimeout(t);
     };
-  }, [active, _validate, touched]);
+  }, [active, touched, validate]);
 
   React.useEffect(() => {
     if (ref.current && handleCursor) {
@@ -109,10 +113,11 @@ export default function useInput({
       setValue,
       touched,
       valid: !error,
-      validate: _validate,
+      validate,
+      validating,
       visited: touched || active,
     }),
-    [active, actualValue, dirty, error, _validate, setValue, touched]
+    [active, actualValue, dirty, error, setValue, touched, validate, validating]
   );
 
   const formatWhileActive = handleCursor && format !== id && parse !== id;

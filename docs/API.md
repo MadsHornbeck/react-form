@@ -13,7 +13,7 @@ Basic
 - validate - a function or array of functions that validate the input
 - format - will format the value and display it when the input is not active
 - parse - values are parsed then normalized before set in input state
-- normalize - TODO: describe difference between parse and normalize
+- normalize - run on blur and allows you to normalize the value e.g. convert it to all uppercase
 
 Events
 
@@ -39,6 +39,7 @@ input - the object returned from this hook will have stable referential identity
   - dirty - true if value is the same as initialValue
   - pristine - opposite of dirty
   - valid - true if error is falsy
+  - validating - true if the input is currently doing async validation
   - invalid - opposite of valid
   - actualValue - the value as it's stored, different from the value property only when format is being used.
   - setError - allows for the setting of the input error
