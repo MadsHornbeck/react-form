@@ -5,29 +5,23 @@ import { Radio, Input } from "../inputComponents";
 
 const colors = ["Red", "Green", "Blue"];
 
-// TODO: maybe handle issue of feedback loop of changes if changes are triggers with specific timing.
-const handlers = {
-  color: ({ triplet, color }) => {
-    switch (color.value) {
-      case "Red":
-        triplet.meta.setValue("Huey");
-        break;
-      case "Blue":
-        triplet.meta.setValue("Dewey");
-        break;
-      case "Green":
-        triplet.meta.setValue("Louie");
-        break;
-    }
-  },
-};
-
 function ChangeHandlers() {
   const color = useInput();
   const triplet = useInput();
 
   const inputs = React.useMemo(() => ({ color, triplet }), [color, triplet]);
-  const form = useForm({ inputs, handlers });
+  const form = useForm({ inputs });
+
+  React.useEffect(() => {
+    if (form.changed.color) {
+      const name = {
+        Red: "Huey",
+        Blue: "Dewey",
+        Green: "Louie",
+      }[inputs.color.value];
+      inputs.triplet.meta.setValue(name);
+    }
+  }, [form.changed.color, inputs]);
 
   return (
     <form onSubmit={form.onSubmit}>

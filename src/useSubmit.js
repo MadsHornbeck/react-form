@@ -7,7 +7,7 @@ export default function useSubmit({
   inputs,
   postSubmit = noop,
   preSubmit = noop,
-  validate = noop,
+  validateForm,
 }) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [errors, setErrors] = React.useState({});
@@ -23,7 +23,7 @@ export default function useSubmit({
         })
       );
 
-      if (inputErrors.some(Boolean) || !(await validate())) return;
+      if (inputErrors.some(Boolean) || (await validateForm())) return;
 
       const values = mapObject(inputs, (i) => i.meta.actualValue);
       preSubmit(values);
@@ -34,7 +34,7 @@ export default function useSubmit({
       setErrors(submitErrors);
       postSubmit(values, submitErrors);
     },
-    [handleSubmit, inputs, isSubmitting, postSubmit, preSubmit, validate]
+    [handleSubmit, inputs, isSubmitting, postSubmit, preSubmit, validateForm]
   );
 
   return [onSubmit, isSubmitting, errors];

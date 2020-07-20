@@ -24,7 +24,7 @@ function ThousandInputs() {
       <button type="submit">Submit</button>
       <div>
         {inputArr.map(([name, input]) => (
-          <input key={name} name={name} {...input} />
+          <input key={name} {...input} />
         ))}
       </div>
     </form>

@@ -77,7 +77,8 @@ Advanced
 - errors - object containing all errors for all field as `{[inputName]: error}`
 - formErrors - object containing all form level errors
 - submitErrors - object containing all submit level errors
-- validate - function that validates the form, returns true if the form has no errors otherwise false.
+- validate - function that validates the form, returns the errors from the validate function passed
+- changed - an object with input names as keys and whether they've changed as a boolean value
 
 ## validators
 

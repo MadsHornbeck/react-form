@@ -27,14 +27,6 @@ const handleCursor = (v) => {
   return a + l;
 };
 
-const handlers = {
-  age: ({ age, canBuyAlcohol }) => {
-    if (age.value < 18) {
-      canBuyAlcohol.meta.setValue(false);
-    }
-  },
-};
-
 const emailValidate = [isRequired, validators.email("Must be a valid email")];
 
 const handleSubmit = (values) =>
@@ -63,7 +55,7 @@ function SimpleForm() {
     validate: isRequired,
     normalize: Number,
   });
-  const canBuyAlcohol = useInput({ initialValue: false });
+  const canBuyAlcohol = useInput({ initialValue: true });
 
   const inputs = React.useMemo(
     () => ({ age, canBuyAlcohol, email, name, phone, sex }),
@@ -74,8 +66,14 @@ function SimpleForm() {
     inputs,
     handleSubmit,
     validate: handleSubmit,
-    handlers,
   });
+
+  const isUnderage = age.value < 18;
+  React.useEffect(() => {
+    if (form.changed.age && isUnderage) {
+      canBuyAlcohol.meta.setValue(false);
+    }
+  }, [canBuyAlcohol.meta, form.changed.age, isUnderage]);
 
   return (
     <form onSubmit={form.onSubmit}>
@@ -88,7 +86,7 @@ function SimpleForm() {
         {...canBuyAlcohol}
         type="checkbox"
         label="Can buy alcohol"
-        disabled={age.value < 18}
+        disabled={isUnderage}
       />
       <button type="submit" disabled={form.isSubmitting}>
         {form.isSubmitting ? "Is submitting" : "Submit"}

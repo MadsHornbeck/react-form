@@ -1,6 +1,5 @@
 import React from "react";
 
-import useChangeHandler from "./useChangeHandler";
 import useChanged from "./useChanged";
 import useSubmit from "./useSubmit";
 import useValidation from "./useValidation";
@@ -8,14 +7,13 @@ import { mapObject } from "./util";
 
 export default function useForm({
   handleSubmit,
-  handlers,
   initialValues = {},
   inputs,
   postSubmit,
   preSubmit,
-  validate: validateFn,
+  validate,
 }) {
-  const changedInputs = useChanged({ inputs });
+  const changed = useChanged(inputs);
   const form = React.useRef({});
 
   const setValues = React.useCallback(
@@ -38,19 +36,18 @@ export default function useForm({
     });
   }, [inputs]);
 
-  useChangeHandler({ changedInputs, inputs, handlers });
-  const [formErrors, validate] = useValidation({
-    changedInputs,
-    inputs,
-    validate: validateFn,
-  });
+  const [formErrors, validateForm] = useValidation(inputs, validate);
+
+  React.useEffect(() => {
+    validateForm();
+  }, [changed, validateForm]);
 
   const [onSubmit, isSubmitting, submitErrors] = useSubmit({
     handleSubmit,
     inputs,
     postSubmit,
     preSubmit,
-    validate,
+    validateForm,
   });
 
   const errors = React.useMemo(
@@ -59,10 +56,11 @@ export default function useForm({
         inputs,
         (i, k) => i.meta.inputError || formErrors[k] || submitErrors[k]
       ),
-    [changedInputs, formErrors, inputs, submitErrors] // eslint-disable-line react-hooks/exhaustive-deps
+    [changed, formErrors, inputs, submitErrors] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   return Object.assign(form.current, {
+    changed,
     errors,
     formErrors,
     inputs,
@@ -70,6 +68,6 @@ export default function useForm({
     onSubmit,
     setValues,
     submitErrors,
-    validate,
+    validate: validateForm,
   });
 }

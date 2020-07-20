@@ -5,23 +5,27 @@ import { mapObject } from "./util";
 const defaultSelect = (i) => i.meta.actualValue;
 const defaultCompare = (a, b) => a !== b;
 
-export default function useChanged({
-  compare = defaultCompare,
-  delay = 200,
+// TODO: document use of this hook
+export default function useChanged(
   inputs,
-  select = defaultSelect, // TODO: maybe find a better name than select.
-}) {
+  {
+    compare = defaultCompare,
+    delay = 200,
+    select = defaultSelect, // TODO: maybe find a better name than select.
+  } = {}
+) {
   const prev = React.useRef(mapObject(inputs, select));
-  const [changedInputs, setChangedInputs] = React.useState([]);
+  const [changed, setChanged] = React.useState({});
 
   React.useEffect(() => {
     const t = setTimeout(() => {
-      const changes = Object.entries(inputs)
-        .filter(([name, input]) => compare(select(input), prev.current[name]))
-        .map(([name]) => name);
-      if (changes.length) {
-        prev.current = mapObject(inputs, select);
-        setChangedInputs(changes);
+      const next = mapObject(inputs, select);
+      const changes = mapObject(inputs, (_, name) =>
+        compare(next[name], prev.current[name])
+      );
+      if (Object.values(changes).some(Boolean)) {
+        prev.current = next;
+        setChanged(changes);
       }
     }, delay);
     return () => {
@@ -29,5 +33,5 @@ export default function useChanged({
     };
   });
 
-  return changedInputs;
+  return changed;
 }
