@@ -79,3 +79,20 @@ export const guid = /*#__PURE__*/ validateFn(
 
 // TODO
 // const isoDate = () => {};
+
+export default {
+  creditCard,
+  email,
+  greater,
+  guid,
+  max,
+  maxLength,
+  min,
+  minLength,
+  negative,
+  pattern,
+  positive,
+  required,
+  smaller,
+  validateFn,
+};
