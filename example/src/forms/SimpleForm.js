@@ -1,6 +1,6 @@
 import React from "react";
 import { useInput, useForm } from "@hornbeck/react-form";
-import * as validators from "@hornbeck/react-form/validators";
+import * as validators from "@hornbeck/validators";
 
 import { Input, Radio } from "../inputComponents";
 import { wait } from "../util";

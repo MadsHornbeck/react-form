@@ -1,7 +1,7 @@
 import React from "react";
 
 import { useInput, useForm } from "@hornbeck/react-form";
-import * as validators from "@hornbeck/react-form/validators";
+import * as validators from "@hornbeck/validators";
 
 const validate = [
   validators.required("Required"),
