@@ -5,26 +5,20 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   color: white;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.form-selector {
+  max-width: 80vw;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.form-selector > ul {
+  list-style: none;
+  display: flex;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.form-selector > div {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 }
