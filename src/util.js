@@ -1,6 +1,8 @@
 export const noop = () => {};
 export const id = (a) => a;
 
+export const emptyObj = Object.freeze({});
+
 export const getEventValue = (e) => {
   switch (e.currentTarget.type) {
     case "checkbox":

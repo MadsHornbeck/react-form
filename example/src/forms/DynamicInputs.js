@@ -9,17 +9,21 @@ const validate = [
   validators.minLength(3, "Must be at least 3 characters"),
 ];
 
+// TODO: consider making a hook for handling this scenario.
 function DynamicInputs() {
   const [inputArr, setInputArr] = React.useState([]);
-  const inputs = React.useRef({});
+  const [inputs, setInputs] = React.useState({});
 
   const addInput = React.useCallback((name, input) => {
-    inputs.current[name] = input;
-    return () => delete inputs.current[name];
+    setInputs((inputs) => ({ ...inputs, [name]: input }));
+    return () => {
+      // eslint-disable-next-line no-unused-vars
+      setInputs(({ [name]: _, ...inputs }) => inputs);
+    };
   }, []);
 
   const form = useForm({
-    inputs: inputs.current,
+    inputs,
     handleSubmit: console.log,
   });
 
@@ -43,8 +47,8 @@ function DynamicInputs() {
 
 export default DynamicInputs;
 
-function Dynamic({ name, addInput }) {
+const Dynamic = React.memo(({ name, addInput }) => {
   const input = useInput({ validate });
   React.useEffect(() => addInput(name, input), [addInput, input, name]);
   return <Input {...input} label={name} />;
-}
+});

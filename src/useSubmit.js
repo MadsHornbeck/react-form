@@ -1,6 +1,6 @@
 import React from "react";
 
-import { mapObject, noop } from "./util";
+import { emptyObj, mapObject, noop } from "./util";
 
 export default function useSubmit({
   handleSubmit,
@@ -10,7 +10,7 @@ export default function useSubmit({
   validateForm,
 }) {
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [errors, setErrors] = React.useState({});
+  const [errors, setErrors] = React.useState(emptyObj);
 
   const onSubmit = React.useCallback(
     async (e) => {
@@ -28,10 +28,9 @@ export default function useSubmit({
       const values = mapObject(inputs, (i) => i.meta.actualValue);
       preSubmit(values);
       setIsSubmitting(true);
-      setErrors({});
       const submitErrors = await handleSubmit(values);
       setIsSubmitting(false);
-      setErrors(submitErrors);
+      setErrors(submitErrors || emptyObj);
       postSubmit(values, submitErrors);
     },
     [handleSubmit, inputs, isSubmitting, postSubmit, preSubmit, validateForm]

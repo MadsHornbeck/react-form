@@ -12,10 +12,6 @@ function Example() {
       validators.required("Required"),
       validators.email("Invalid email address"),
     ],
-    parse: (v, p) => {
-      console.log(v, p);
-      return p.includes(v) ? p.filter((e) => v === e) : p.concat(v);
-    },
   });
 
   const inputs = React.useMemo(() => ({ username, email }), [email, username]);

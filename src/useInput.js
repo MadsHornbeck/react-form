@@ -62,6 +62,7 @@ export default function useInput({
       setActive(false);
       setTouched(true);
       setActualValue(normalize);
+      // TODO: maybe add a validateOnBlur prop.
     },
     [handleBlur, normalize]
   );
