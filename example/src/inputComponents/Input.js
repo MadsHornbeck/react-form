@@ -1,28 +1,11 @@
 import React from "react";
+import InputWrapper from "./InputWrapper";
 
-function Input({ type, meta, label, ...input }, ref) {
+function Input({ meta, label, ...input }, ref) {
   return (
-    <div className="input">
-      <label>
-        {label}:
-        <input
-          ref={ref}
-          type={type}
-          {...input}
-          checked={input.value}
-          className={[
-            meta.active && "active",
-            meta.dirty && "dirty",
-            meta.error && "error",
-            meta.touched && "touched",
-            meta.visited && "visited",
-          ]
-            .filter(Boolean)
-            .join(" ")}
-        />
-      </label>
-      <div className="meta">{meta.error}</div>
-    </div>
+    <InputWrapper meta={meta} label={label}>
+      <input ref={ref} {...input} checked={input.value} />
+    </InputWrapper>
   );
 }
 

@@ -145,25 +145,3 @@ export default function useInput({
     value: active && !formatWhileActive ? actualValue : formattedValue,
   });
 }
-
-export function useMultipleSelect(props) {
-  const input = useInput(props);
-
-  const onClick = React.useCallback(
-    (e) => {
-      if (e.target.tagName === "OPTION" && !e.target.disabled) {
-        const handleChange = props.handleChange;
-        const setValue = input.meta.setValue;
-        handleChange(e);
-        setValue(e.target.value);
-      }
-    },
-    [input.meta.setValue, props.handleChange]
-  );
-
-  return {
-    ...input,
-    onClick,
-    onChange: noop,
-  };
-}

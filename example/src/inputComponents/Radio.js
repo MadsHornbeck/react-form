@@ -1,30 +1,25 @@
 import React from "react";
+import InputWrapper from "./InputWrapper";
 
 function Input({ options, meta, label, ...input }, ref) {
   const name = React.useRef(Math.random());
   return (
-    <div className="input">
-      <label className="radio">
-        {label}:
-        <div>
-          {options.map((v) => (
-            <label key={v}>
-              <input
-                type="radio"
-                name={name.current}
-                {...input}
-                value={v}
-                checked={input.value === v}
-              />
-              {v}
-            </label>
-          ))}
-        </div>
-      </label>
-      <div className="meta">
-        {meta.touched && meta.error && <div>{meta.error}</div>}
-      </div>
-    </div>
+    <InputWrapper meta={meta} label={label}>
+      <span ref={ref}>
+        {options.map((value) => (
+          <label key={value}>
+            <input
+              type="radio"
+              name={name.current}
+              {...input}
+              value={value}
+              checked={input.value === value}
+            />
+            {value}
+          </label>
+        ))}
+      </span>
+    </InputWrapper>
   );
 }
 

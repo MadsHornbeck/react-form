@@ -1,27 +1,24 @@
 import React from "react";
+import InputWrapper from "./InputWrapper";
 
-function Input({ options, meta, ...input }, ref) {
+function Select({ options, meta, label, ...input }, ref) {
   return (
-    <div className="input">
-      <label>
-        <div>
-          <select {...input} ref={ref}>
-            <option disabled></option>
-            {options.map((v) => (
-              <option key={v} value={v}>
-                {v}
-              </option>
-            ))}
-          </select>
-        </div>
-      </label>
-      <div>
-        {meta.active && <div>Active</div>}
-        {meta.touched && <div>Touched</div>}
-        {meta.error && <div>{meta.error}</div>}
-      </div>
-    </div>
+    <InputWrapper meta={meta} label={label}>
+      <SelectInput ref={ref} {...input} options={options} />
+    </InputWrapper>
   );
 }
 
-export default React.memo(React.forwardRef(Input));
+export default React.memo(React.forwardRef(Select));
+
+const SelectInput = React.memo(
+  React.forwardRef(({ options, ...input }, ref) => (
+    <select {...input} ref={ref}>
+      {options.map((v) => (
+        <option key={v} value={v}>
+          {v}
+        </option>
+      ))}
+    </select>
+  ))
+);

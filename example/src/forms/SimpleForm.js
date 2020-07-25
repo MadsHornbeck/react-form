@@ -2,7 +2,7 @@ import React from "react";
 import { useInput, useForm } from "@hornbeck/react-form";
 import * as validators from "@hornbeck/validators";
 
-import { Input, Radio } from "../inputComponents";
+import { Input, Radio, Select } from "../inputComponents";
 import { wait } from "../util";
 
 const sexOptions = ["Female", "Male", "Other"];
@@ -35,6 +35,8 @@ const handleSubmit = (values) =>
     email: /\.com/.test(values.email) ? undefined : "Must be a .com domain",
   });
 
+const colors = ["Red", "Blue", "Green"];
+
 function SimpleForm() {
   const name = useInput({
     validate: isRequired,
@@ -50,6 +52,7 @@ function SimpleForm() {
     handleCursor,
   });
   const sex = useInput();
+  const favoriteColor = useInput({ initialValue: [] });
   const age = useInput({
     initialValue: 20,
     validate: isRequired,
@@ -58,8 +61,8 @@ function SimpleForm() {
   const canBuyAlcohol = useInput({ initialValue: true });
 
   const inputs = React.useMemo(
-    () => ({ age, canBuyAlcohol, email, name, phone, sex }),
-    [age, canBuyAlcohol, email, name, phone, sex]
+    () => ({ age, canBuyAlcohol, email, favoriteColor, name, phone, sex }),
+    [age, canBuyAlcohol, email, favoriteColor, name, phone, sex]
   );
 
   const form = useForm({
@@ -81,6 +84,12 @@ function SimpleForm() {
       <Input {...email} label="Email" />
       <Input {...phone} label="Phone" />
       <Radio {...sex} label="Sex" options={sexOptions} />
+      <Select
+        {...favoriteColor}
+        label="Favorite Color"
+        options={colors}
+        multiple
+      />
       <Input {...age} label="Age" type="number" />
       <Input
         {...canBuyAlcohol}

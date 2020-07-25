@@ -8,6 +8,9 @@ export const getEventValue = (e) => {
     case "checkbox":
       return e.currentTarget.checked;
     case "select-multiple":
+      return [...e.currentTarget.options]
+        .filter((o) => o.selected)
+        .map((o) => o.value);
     default:
       return e.currentTarget.value;
   }

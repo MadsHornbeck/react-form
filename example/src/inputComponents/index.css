@@ -12,7 +12,8 @@
   height: 50px;
 }
 
-.input input {
+.input input,
+.input select {
   padding: 0.6em;
   border-color: none;
   border-radius: 0.3em;
@@ -20,15 +21,18 @@
   border-width: 2px;
 }
 
-.input input.touched {
+.input.touched input,
+.input.touched select {
   border-color: limegreen;
 }
 
-.input input.active {
+.input.active input,
+.input.active select {
   border-color: blue;
 }
 
-.input input.error {
+.input.error input,
+.input.error select {
   border-color: red;
 }
 
