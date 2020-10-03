@@ -15,9 +15,12 @@
   },
   "keywords": [
     "react",
-    "form",
     "input",
-    "validate"
+    "form",
+    "forms",
+    "validation",
+    "hooks",
+    "react-hooks"
   ],
   "module": "src/index.js",
   "sideEffects": false,
