@@ -4,7 +4,12 @@ import InputWrapper from "./InputWrapper";
 function Input({ meta, label, ...input }, ref) {
   return (
     <InputWrapper meta={meta} label={label}>
-      <input ref={ref} {...input} checked={input.value} />
+      <input
+        ref={ref}
+        {...input}
+        value={input.type === "file" ? undefined : input.value}
+        checked={input.value}
+      />
     </InputWrapper>
   );
 }

@@ -1,6 +1,6 @@
 import React from "react";
 
-function InputWrapper({ meta, label, children, ...input }, ref) {
+function InputWrapper({ meta, label, children }) {
   return (
     <div
       className={[
@@ -15,11 +15,11 @@ function InputWrapper({ meta, label, children, ...input }, ref) {
         .join(" ")}
     >
       <label>
-        {label}:{React.cloneElement(children, { ref, ...input })}
+        {label}: {children}
       </label>
       <div className="meta">{meta.error}</div>
     </div>
   );
 }
 
-export default React.memo(React.forwardRef(InputWrapper));
+export default React.memo(InputWrapper);

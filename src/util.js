@@ -11,6 +11,8 @@ export const getEventValue = (e) => {
       return [...e.currentTarget.options]
         .filter((o) => o.selected)
         .map((o) => o.value);
+    case "file":
+      return e.currentTarget.files;
     default:
       return e.currentTarget.value;
   }

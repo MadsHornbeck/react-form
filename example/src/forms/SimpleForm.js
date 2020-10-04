@@ -53,16 +53,26 @@ function SimpleForm() {
   });
   const sex = useInput();
   const favoriteColor = useInput({ initialValue: [] });
+  const profilePicture = useInput({ validate: isRequired });
   const age = useInput({
     initialValue: 20,
     validate: isRequired,
     normalize: Number,
   });
-  const canBuyAlcohol = useInput({ initialValue: true });
+  const canBuyAlcohol = useInput();
 
   const inputs = React.useMemo(
-    () => ({ age, canBuyAlcohol, email, favoriteColor, name, phone, sex }),
-    [age, canBuyAlcohol, email, favoriteColor, name, phone, sex]
+    () => ({
+      age,
+      canBuyAlcohol,
+      email,
+      favoriteColor,
+      name,
+      phone,
+      sex,
+      profilePicture,
+    }),
+    [age, canBuyAlcohol, email, favoriteColor, name, phone, sex, profilePicture]
   );
 
   const form = useForm({
@@ -97,6 +107,7 @@ function SimpleForm() {
         label="Can buy alcohol"
         disabled={isUnderage}
       />
+      <Input {...profilePicture} type="file" label="Profile picture" multiple />
       <button type="submit" disabled={form.isSubmitting}>
         {form.isSubmitting ? "Is submitting" : "Submit"}
       </button>
