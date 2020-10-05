@@ -9,8 +9,6 @@ export default function useForm({
   handleSubmit,
   initialValues = {},
   inputs,
-  postSubmit,
-  preSubmit,
   validate,
 }) {
   const changed = useChanged(inputs);
@@ -45,8 +43,6 @@ export default function useForm({
   const [onSubmit, isSubmitting, submitErrors] = useSubmit({
     handleSubmit,
     inputs,
-    postSubmit,
-    preSubmit,
     validateForm,
   });
 
@@ -54,7 +50,7 @@ export default function useForm({
     () =>
       mapObject(
         inputs,
-        (i, k) => i.meta.inputError || formErrors[k] || submitErrors[k]
+        (i, n) => i.meta.inputError || formErrors[n] || submitErrors[n]
       ),
     [changed, formErrors, inputs, submitErrors] // eslint-disable-line react-hooks/exhaustive-deps
   );

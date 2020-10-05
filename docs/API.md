@@ -59,11 +59,6 @@ Basic
 - initialValues - object of values that will be the initial values, this will overwrite any value set on the individual inputs
 - validate - a function or validate the inputs, should return an object with `{ [inputName]: error }`
 
-Events
-
-- preSubmit
-- postSubmit
-
 Advanced
 
 - handlers - allows for defining inter-input relationships
