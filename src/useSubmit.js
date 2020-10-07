@@ -17,7 +17,7 @@ export default function useSubmit({ handleSubmit, inputs, validateForm }) {
           return i.meta.validate();
         })
       );
-      const hasErrors = inputErrors.some(Boolean) || (await validateForm());
+      const hasErrors = inputErrors.some(Boolean) || !(await validateForm());
 
       if (!hasErrors) {
         const values = mapObject(inputs, (i) => i.meta.actualValue);

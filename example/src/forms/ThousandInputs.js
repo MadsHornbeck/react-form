@@ -15,8 +15,12 @@ function ThousandInputs() {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useInput({ validate }),
   ]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const inputs = React.useMemo(() => Object.fromEntries(inputArr), []);
+
   const form = useForm({
-    inputs: Object.fromEntries(inputArr),
+    inputs,
     handleSubmit: console.log,
   });
   return (
@@ -31,4 +35,4 @@ function ThousandInputs() {
   );
 }
 
-export default ThousandInputs;
+export default React.memo(ThousandInputs);

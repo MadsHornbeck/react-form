@@ -3,7 +3,7 @@ import React from "react";
 import useChanged from "./useChanged";
 import useSubmit from "./useSubmit";
 import useValidation from "./useValidation";
-import { mapObject } from "./util";
+import { emptyObj, mapObject } from "./util";
 
 export default function useForm({
   handleSubmit,
@@ -34,7 +34,10 @@ export default function useForm({
     });
   }, [inputs]);
 
-  const [formErrors, validateForm] = useValidation(inputs, validate);
+  const [validateForm, formErrors, formValidating] = useValidation(
+    inputs,
+    validate
+  );
 
   React.useEffect(() => {
     validateForm();
@@ -46,6 +49,12 @@ export default function useForm({
     validateForm,
   });
 
+  const valid =
+    formErrors === emptyObj && Object.values(inputs).every((i) => i.meta.valid);
+
+  const validating =
+    formValidating || Object.values(inputs).some((i) => i.meta.validating);
+
   const errors = React.useMemo(
     () =>
       mapObject(
@@ -56,14 +65,18 @@ export default function useForm({
   );
 
   return Object.assign(form.current, {
+    canSubmit: !isSubmitting && valid,
     changed,
     errors,
     formErrors,
     inputs,
+    invalid: !valid,
     isSubmitting,
     onSubmit,
     setValues,
     submitErrors,
+    valid,
     validate: validateForm,
+    validating,
   });
 }

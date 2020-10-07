@@ -108,7 +108,7 @@ function SimpleForm() {
         disabled={isUnderage}
       />
       <Input {...profilePicture} type="file" label="Profile picture" multiple />
-      <button type="submit" disabled={form.isSubmitting}>
+      <button type="submit" disabled={!form.canSubmit}>
         {form.isSubmitting ? "Is submitting" : "Submit"}
       </button>
     </form>

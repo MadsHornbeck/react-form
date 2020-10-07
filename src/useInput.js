@@ -23,7 +23,7 @@ export default function useInput({
   const [touched, setTouched] = React.useState(false);
   const [active, setActive] = React.useState(false);
   const [validating, setValidating] = React.useState(false);
-  const form = React.useRef({ errors: {} });
+  const form = React.useRef({ formErrors: {}, submitErrors: {} });
   const input = React.useRef({});
   const ref = React.useRef();
 
@@ -101,7 +101,11 @@ export default function useInput({
 
   React.useDebugValue(actualValue);
 
-  const error = inputError || form.current.errors[input.current.name];
+  const error =
+    inputError ||
+    form.current.formErrors[input.current.name] ||
+    form.current.submitErrors[input.current.name];
+
   const dirty = actualValue !== initialValue;
   const meta = React.useMemo(
     () => ({
