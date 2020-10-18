@@ -30,8 +30,7 @@ export default function useInput({
   const setValue = React.useCallback(
     (value) => {
       setActualValue((prevValue) =>
-        // TODO: maybe format the prevValue passed to parse
-        parse(value, prevValue)
+        parse(typeof value === "function" ? value(prevValue) : value, prevValue)
       );
     },
     [parse]
