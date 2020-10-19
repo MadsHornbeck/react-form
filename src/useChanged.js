@@ -19,11 +19,9 @@ export default function useChanged(delay = 200) {
     [delay]
   );
 
-  React.useEffect(() => {
-    setChanged(emptyObj);
-  }, [changed]);
+  React.useEffect(() => setChanged(emptyObj), [changed]);
 
-  React.useEffect(() => clearTimeout(timeout.current), []);
+  React.useEffect(() => () => clearTimeout(timeout.current), []);
 
   return [changed, inputChanged];
 }
