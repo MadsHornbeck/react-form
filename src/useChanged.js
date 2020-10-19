@@ -1,37 +1,29 @@
 import React from "react";
 
-import { mapObject } from "./util";
+import { emptyObj } from "./util";
 
-const defaultSelect = (i) => i.meta.actualValue;
-const defaultCompare = (a, b) => a !== b;
+export default function useChanged(delay = 200) {
+  const [changed, setChanged] = React.useState(emptyObj);
+  const changedList = React.useRef([]);
+  const timeout = React.useRef();
 
-// TODO: document use of this hook
-export default function useChanged(
-  inputs,
-  {
-    compare = defaultCompare,
-    delay = 200,
-    select = defaultSelect, // TODO: maybe find a better name than select.
-  } = {}
-) {
-  const prev = React.useRef(mapObject(inputs, select));
-  const [changed, setChanged] = React.useState({});
+  const inputChanged = React.useCallback(
+    (name) => {
+      changedList.current.push([name, true]);
+      clearTimeout(timeout.current);
+      timeout.current = setTimeout(() => {
+        setChanged(Object.fromEntries(changedList.current));
+        changedList.current = [];
+      }, delay);
+    },
+    [delay]
+  );
 
   React.useEffect(() => {
-    const t = setTimeout(() => {
-      const next = mapObject(inputs, select);
-      const changes = mapObject(inputs, (_, name) =>
-        compare(next[name], prev.current[name])
-      );
-      if (Object.values(changes).some(Boolean)) {
-        prev.current = next;
-        setChanged(changes);
-      }
-    }, delay);
-    return () => {
-      clearTimeout(t);
-    };
-  });
+    setChanged(emptyObj);
+  }, [changed]);
 
-  return changed;
+  React.useEffect(() => clearTimeout(timeout.current), []);
+
+  return [changed, inputChanged];
 }

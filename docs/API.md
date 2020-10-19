@@ -21,10 +21,6 @@ Events
 - handleChange - is called whenever the input is changed
 - handleFocus - is called whenever the input is focused
 
-Advanced
-
-- handleCursor
-
 ### return
 
 input - the object returned from this hook will have stable referential identity.
@@ -41,7 +37,7 @@ input - the object returned from this hook will have stable referential identity
   - valid - true if error is falsy
   - validating - true if the input is currently doing async validation
   - invalid - opposite of valid
-  - actualValue - the value as it's stored, different from the value property only when format is being used.
+  - actualValue - the value as it's stored, different from the value property only when format is being used and `meta.active` is false.
   - setError - allows for the setting of the input error
   - setTouched - allows for the setting the input as touched
   - setValue - allows for the setting of the input value
@@ -59,10 +55,6 @@ Basic
 - initialValues - object of values that will be the initial values, this will overwrite any value set on the individual inputs
 - validate - a function or validate the inputs, should return an object with `{ [inputName]: error }`
 
-Advanced
-
-- handlers - allows for defining inter-input relationships
-
 ### return
 
 - inputs - inputs as passed as props
@@ -74,34 +66,3 @@ Advanced
 - submitErrors - object containing all submit level errors
 - validate - function that validates the form, returns the errors from the validate function passed
 - changed - an object with input names as keys and whether they've changed as a boolean value
-
-## validators
-
-Validation functions
-
-```js
-// Example of use: required(error message)
-
-const validate = required("Required");
-// OR
-const validate = [
-  required("Required"),
-  maxLength(80, "Cannot exceed 80 characters"),
-];
-```
-
-- required
-- maxLength
-- minLength
-- max
-- min
-- pattern
-- positive
-- negative
-- smaller
-- greater
-
-- validateFn - a helper for creating your own validation functions
-- creditCard - validate the format of credit card number. (disclaimer: this only verifies that a credit card number matches the format, it does _not_ validate or verify the creditcard is actually valid)
-- guid
-- email

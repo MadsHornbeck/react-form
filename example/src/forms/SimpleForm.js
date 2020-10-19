@@ -15,17 +15,7 @@ const phoneFormat = (v) => {
   const last = v.slice(6, 10).padEnd(4, "_");
   return `+1 (${local}) ${first}-${last}`;
 };
-const phoneParse = (v) =>
-  v
-    .match(/[+\d]+/g)
-    ?.filter((s) => s !== "+1")
-    .join("") || "";
-
-const handleCursor = (v) => {
-  const l = String(v).length;
-  const a = l <= 3 ? 4 : l <= 6 ? 6 : 7;
-  return a + l;
-};
+const phoneParse = (v) => v.match(/\d{1,10}/)?.[0] || "";
 
 const emailValidate = [isRequired, validators.email("Must be a valid email")];
 
@@ -49,7 +39,6 @@ function SimpleForm() {
   const phone = useInput({
     format: phoneFormat,
     parse: phoneParse,
-    handleCursor,
   });
   const sex = useInput();
   const favoriteColor = useInput({ initialValue: [] });

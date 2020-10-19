@@ -11,7 +11,7 @@ export default function useForm({
   inputs,
   validate,
 }) {
-  const changed = useChanged(inputs);
+  const [changed, inputChanged] = useChanged();
   const form = React.useRef({});
 
   const setValues = React.useCallback(
@@ -73,6 +73,7 @@ export default function useForm({
     invalid: !valid,
     isSubmitting,
     onSubmit,
+    inputChanged,
     setValues,
     submitErrors,
     valid,

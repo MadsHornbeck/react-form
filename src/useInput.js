@@ -2,13 +2,14 @@ import React from "react";
 
 import { noop, id, getEventValue, validateField } from "./util";
 
+const defaultForm = { formErrors: {}, submitErrors: {}, inputChanged: noop };
+
 export default function useInput({
   format = id,
   handleBlur = noop,
   handleChange = noop,
-  handleCursor,
   handleFocus = noop,
-  initialValue = "", // TODO: maybe add a reset function to reset to initialValue
+  initialValue = "",
   normalize = id,
   parse = id,
   validate: validateFn = noop,
@@ -23,7 +24,7 @@ export default function useInput({
   const [touched, setTouched] = React.useState(false);
   const [active, setActive] = React.useState(false);
   const [validating, setValidating] = React.useState(false);
-  const form = React.useRef({ formErrors: {}, submitErrors: {} });
+  const form = React.useRef(defaultForm);
   const input = React.useRef({});
   const ref = React.useRef();
 
@@ -38,7 +39,7 @@ export default function useInput({
 
   const onFocus = React.useCallback(
     (e) => {
-      handleFocus(e); // TODO: do we want any arguments passed here?
+      handleFocus(e);
       setActive(true);
     },
     [handleFocus]
@@ -46,17 +47,16 @@ export default function useInput({
 
   const onChange = React.useCallback(
     (e) => {
-      // TODO: do we want any arguments passed here?
       handleChange(e);
       const eventValue = getEventValue(e);
       setValue(eventValue);
+      form.current.inputChanged(input.current.name);
     },
     [handleChange, setValue]
   );
 
   const onBlur = React.useCallback(
     (e) => {
-      // TODO: do we want any arguments passed here?
       handleBlur(e);
       setActive(false);
       setTouched(true);
@@ -66,7 +66,6 @@ export default function useInput({
     [handleBlur, normalize]
   );
 
-  // TODO: find a better name for this
   const validate = React.useCallback(() => {
     const error = validateField(validateFn)(actualValue);
     if (error instanceof Promise) {
@@ -89,14 +88,6 @@ export default function useInput({
       clearTimeout(t);
     };
   }, [active, touched, validate]);
-
-  React.useEffect(() => {
-    if (ref.current && handleCursor) {
-      const selection = handleCursor(actualValue, ref.current);
-      // TODO: figure out how to handle case where a character in the middle is deleted.
-      ref.current.setSelectionRange(selection, selection);
-    }
-  }, [handleCursor, actualValue]);
 
   React.useDebugValue(actualValue);
 
@@ -138,13 +129,12 @@ export default function useInput({
     ]
   );
 
-  const formatWhileActive = handleCursor && format !== id && parse !== id;
   return Object.assign(input.current, {
     meta,
     onBlur,
     onChange,
     onFocus,
     ref,
-    value: active && !formatWhileActive ? actualValue : formattedValue,
+    value: active ? actualValue : formattedValue,
   });
 }

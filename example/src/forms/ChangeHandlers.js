@@ -21,7 +21,7 @@ function ChangeHandlers() {
       }[inputs.color.value];
       inputs.triplet.meta.setValue(name);
     }
-  }, [form.changed.color, inputs]);
+  }, [form.changed.color, inputs.color.value, inputs.triplet.meta]);
 
   return (
     <form onSubmit={form.onSubmit}>
