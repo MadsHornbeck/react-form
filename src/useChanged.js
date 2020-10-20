@@ -2,7 +2,7 @@ import React from "react";
 
 import { emptyObj } from "./util";
 
-export default function useChanged(delay = 200) {
+export default function useChanged(delay) {
   const [changed, setChanged] = React.useState(emptyObj);
   const changedList = React.useRef([]);
   const timeout = React.useRef();

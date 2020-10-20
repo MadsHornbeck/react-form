@@ -8,10 +8,12 @@ import { emptyObj, mapObject } from "./util";
 export default function useForm({
   handleSubmit,
   initialValues = {},
-  inputs,
+  inputs: is = {},
   validate,
+  delay = 200,
 }) {
-  const [changed, inputChanged] = useChanged();
+  const [inputs, setInputs] = React.useState(is);
+  const [changed, inputChanged] = useChanged(delay);
   const form = React.useRef({});
 
   const setValues = React.useCallback(
@@ -69,11 +71,12 @@ export default function useForm({
     changed,
     errors,
     formErrors,
+    inputChanged,
     inputs,
     invalid: !valid,
     isSubmitting,
     onSubmit,
-    inputChanged,
+    setInputs,
     setValues,
     submitErrors,
     valid,

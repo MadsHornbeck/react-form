@@ -54,6 +54,7 @@ Basic
 - handleSubmit - is called with values from all inputs when form is submitted
 - initialValues - object of values that will be the initial values, this will overwrite any value set on the individual inputs
 - validate - a function or validate the inputs, should return an object with `{ [inputName]: error }`
+- delay - a number that specifies the delay between the last change to an input and when validation is run and `useForm.changed` is updated. - default: 200
 
 ### return
 
@@ -62,6 +63,8 @@ Basic
 - onSubmit - should be passed to form. Alternatively can be called seperately
 - setValues - allows for setting of all values in form
 - errors - object containing all errors for all field as `{[inputName]: error}`
+- setInputs - `(inputs: object) => void` sets the inputs of the form to the passed object
+- setChanged - `(name: string) => void` sets the changed state for a specific input, this will trigger form validation and the `changed` object will be updated
 - formErrors - object containing all form level errors
 - submitErrors - object containing all submit level errors
 - validate - function that validates the form, returns the errors from the validate function passed
