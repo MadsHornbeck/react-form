@@ -14,6 +14,7 @@ Basic
 - format - will format the value and display it when the input is not active
 - parse - values are parsed then normalized before set in input state
 - normalize - run on blur and allows you to normalize the value e.g. convert it to all uppercase
+- delay - the delay between the last user input and when the input level validation is run - default: 200
 
 Events
 

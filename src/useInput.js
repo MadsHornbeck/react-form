@@ -2,9 +2,11 @@ import React from "react";
 
 import { noop, id, getEventValue, validateField } from "./util";
 
+// TODO: find out how to reset inputChanged if form unmount but input doesn't
 const defaultForm = { formErrors: {}, submitErrors: {}, inputChanged: noop };
 
 export default function useInput({
+  delay = 200,
   format = id,
   handleBlur = noop,
   handleChange = noop,
@@ -16,10 +18,6 @@ export default function useInput({
 } = {}) {
   // TODO: Try to find a better name than: `actualValue`.
   const [actualValue, setActualValue] = React.useState(initialValue);
-  const formattedValue = React.useMemo(() => format(actualValue), [
-    format,
-    actualValue,
-  ]);
   const [inputError, setError] = React.useState(undefined);
   const [touched, setTouched] = React.useState(false);
   const [active, setActive] = React.useState(false);
@@ -82,12 +80,11 @@ export default function useInput({
 
   React.useEffect(() => {
     if (!active && !touched) return;
-    // TODO: allow for configuration of validation delay
-    const t = setTimeout(validate, 150);
+    const t = setTimeout(validate, delay);
     return () => {
       clearTimeout(t);
     };
-  }, [active, touched, validate]);
+  }, [active, delay, touched, validate]);
 
   React.useDebugValue(actualValue);
 
@@ -135,6 +132,6 @@ export default function useInput({
     onChange,
     onFocus,
     ref,
-    value: active ? actualValue : formattedValue,
+    value: active ? actualValue : format(actualValue),
   });
 }

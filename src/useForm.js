@@ -3,7 +3,7 @@ import React from "react";
 import useChanged from "./useChanged";
 import useSubmit from "./useSubmit";
 import useValidation from "./useValidation";
-import { emptyObj, mapObject } from "./util";
+import { emptyObj, useMap } from "./util";
 
 export default function useForm({
   handleSubmit,
@@ -12,15 +12,15 @@ export default function useForm({
   validate,
   delay = 200,
 }) {
-  const [inputs, setInputs] = React.useState(is);
+  const [inputs, setInputs] = useMap(is);
   const [changed, inputChanged] = useChanged(delay);
   const form = React.useRef({});
 
   const setValues = React.useCallback(
     (values) => {
       Object.entries(values)
-        .filter(([name]) => inputs[name])
-        .forEach(([name, value]) => inputs[name].meta.setValue(value));
+        .filter(([name]) => inputs.has(name))
+        .forEach(([name, value]) => inputs.get(name).meta.setValue(value));
     },
     [inputs]
   );
@@ -29,11 +29,20 @@ export default function useForm({
     setValues(initialValues);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  React.useEffect(() => {
-    Object.entries(inputs).forEach(([name, input]) => {
+  const addInput = React.useCallback(
+    (name, input) => {
+      inputs.set(name, input);
       input.name = name;
       input.meta.form.current = form.current;
-    });
+    },
+    [inputs]
+  );
+
+  React.useEffect(() => {
+    for (const [name, input] of inputs.entries()) {
+      input.name = name;
+      input.meta.form.current = form.current;
+    }
   }, [inputs]);
 
   const [validateForm, formErrors, formValidating] = useValidation(
@@ -42,7 +51,7 @@ export default function useForm({
   );
 
   React.useEffect(() => {
-    validateForm();
+    if (changed !== emptyObj) validateForm();
   }, [changed, validateForm]);
 
   const [onSubmit, isSubmitting, submitErrors] = useSubmit({
@@ -51,22 +60,22 @@ export default function useForm({
     validateForm,
   });
 
+  const inputArr = [...inputs.entries()];
   const valid =
-    formErrors === emptyObj && Object.values(inputs).every((i) => i.meta.valid);
+    formErrors === emptyObj && inputArr.every(([, i]) => i.meta.valid);
 
   const validating =
-    formValidating || Object.values(inputs).some((i) => i.meta.validating);
+    formValidating || inputArr.some(([, i]) => i.meta.validating);
 
-  const errors = React.useMemo(
-    () =>
-      mapObject(
-        inputs,
-        (i, n) => i.meta.inputError || formErrors[n] || submitErrors[n]
-      ),
-    [changed, formErrors, inputs, submitErrors] // eslint-disable-line react-hooks/exhaustive-deps
+  const errors = Object.fromEntries(
+    inputArr.map(([n, i]) => [
+      n,
+      i.meta.inputError || formErrors[n] || submitErrors[n],
+    ])
   );
 
   return Object.assign(form.current, {
+    addInput,
     canSubmit: !isSubmitting && valid,
     changed,
     errors,

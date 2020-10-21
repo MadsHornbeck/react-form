@@ -1,3 +1,5 @@
+import React from "react";
+
 export const noop = () => {};
 export const id = (a) => a;
 
@@ -18,19 +20,34 @@ export const getEventValue = (e) => {
   }
 };
 
-export const mapObject = (obj, fn) =>
-  Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fn(v, k)]));
+export const validateField = (validate) => {
+  if (typeof validate === "function") return validate;
+  return (value, inputs) => {
+    for (const func of validate) {
+      const error = func(value, inputs);
+      if (error) return error;
+    }
+  };
+};
 
-const compose = (arr) => (value, inputs) =>
-  arr.reduce((err, f) => (err ? err : f(value, inputs)), undefined);
+const createMap = (obj, fn) => {
+  const map = new Map(Object.entries(obj));
+  for (const k of ["clear", "delete", "set"]) {
+    const f = map[k];
+    map[k] = (...args) => {
+      fn({});
+      return f.apply(map, args);
+    };
+  }
+  return map;
+};
 
-export const validateField = (f) => (typeof f === "function" ? f : compose(f));
+export function useMap(obj) {
+  const [, update] = React.useState();
+  const [map, _setMap] = React.useState(createMap(obj, update));
+  const setMap = React.useCallback((obj) => {
+    _setMap(createMap(obj, update));
+  }, []);
 
-// TODO: reconsider this name
-export const handleValidate = (validate) =>
-  typeof validate === "function"
-    ? validate
-    : (values, inputs) =>
-        mapObject(validate, (f, name) =>
-          validateField(f)(values[name], inputs)
-        );
+  return [map, setMap];
+}
