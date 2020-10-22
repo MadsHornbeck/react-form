@@ -2,42 +2,28 @@ import React from "react";
 import { useForm, useInput } from "@hornbeck/react-form";
 import * as validators from "@hornbeck/validators";
 
-import { Input } from "../inputComponents";
-
-const validate = [
-  validators.required("Required"),
-  validators.minLength(3, "Must be at least 3 characters"),
-];
+import Input from "../Input";
 
 // TODO: consider making a hook for handling this scenario.
 function DynamicInputs() {
-  const [inputArr, setInputArr] = React.useState([]);
-  const [inputs, setInputs] = React.useState({});
-
-  const addInput = React.useCallback((name, input) => {
-    setInputs((inputs) => ({ ...inputs, [name]: input }));
-    return () => {
-      // eslint-disable-next-line no-unused-vars
-      setInputs(({ [name]: _, ...inputs }) => inputs);
-    };
-  }, []);
-
-  const form = useForm({
-    inputs,
-    handleSubmit: console.log,
-  });
+  const form = useForm({ handleSubmit: console.log });
 
   return (
     <div>
       <button
-        onClick={() => setInputArr((is) => is.concat(`input-${is.length}`))}
+        onClick={() => {
+          const i = form.inputs.size / 2;
+          form.inputs
+            .set(`friends[${i}].firstName`)
+            .set(`friends[${i}].lastName`);
+        }}
       >
         Add input
       </button>
-      <button onClick={() => setInputArr([])}>Remove all inputs</button>
+      <button onClick={form.inputs.clear}>Remove all inputs</button>
       <form onSubmit={form.onSubmit}>
-        {inputArr.map((name) => (
-          <Dynamic key={name} name={name} addInput={addInput} />
+        {[...form.inputs.keys()].map((name) => (
+          <Dynamic key={name} name={name} addInput={form.addInput} />
         ))}
         <button type="submit">Submit</button>
       </form>
@@ -45,10 +31,15 @@ function DynamicInputs() {
   );
 }
 
-export default DynamicInputs;
+export default React.memo(DynamicInputs);
 
 const Dynamic = React.memo(({ name, addInput }) => {
   const input = useInput({ validate });
   React.useEffect(() => addInput(name, input), [addInput, input, name]);
   return <Input {...input} label={name} />;
 });
+
+const validate = [
+  validators.required("Required"),
+  validators.minLength(3, "Must be at least 3 characters"),
+];

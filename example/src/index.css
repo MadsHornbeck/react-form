@@ -1,16 +1,66 @@
-html {
-  font-size: calc(1rem - 6px + 2vmin);
-}
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+:root {
+  --red: #ff4136;
+  --green: #2ecc40;
+  --blue: #0074d9;
+  --light-blue: #7fdbff;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+html {
+  font-size: clamp(1rem, 3vmin, 2rem);
+}
+
+body {
+  margin: 0;
+}
+
+* {
+  font-family: monospace;
+}
+
+h1,
+h2,
+h3 {
+  font-family: sans-serif;
+}
+
+.container > * {
+  width: 80vw;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+@media (max-aspect-ratio: 1 / 2) {
+  .container > * {
+    width: auto;
+    max-width: 100%;
+    margin: 0 10vw;
+  }
+}
+
+.container > * + * {
+  margin-top: 2em;
+}
+
+button {
+  cursor: pointer;
+}
+
+button[type="submit"] {
+  font-size: 0.8em;
+  background-color: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+
+button[type="submit"]:hover,
+button.active {
+  background-color: var(--blue);
+  border-color: var(--blue);
+  color: white;
+}
+
+button:hover {
+  background-color: var(--light-blue);
+  border-color: var(--light-blue);
+  color: black;
 }

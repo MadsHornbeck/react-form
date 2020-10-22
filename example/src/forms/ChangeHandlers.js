@@ -1,16 +1,13 @@
 import React from "react";
 import { useInput, useForm } from "@hornbeck/react-form";
 
-import { Radio, Input } from "../inputComponents";
-
-const colors = ["Red", "Green", "Blue"];
+import Input from "../Input";
 
 function ChangeHandlers() {
   const color = useInput();
   const triplet = useInput();
 
-  const inputs = React.useMemo(() => ({ color, triplet }), [color, triplet]);
-  const form = useForm({ inputs });
+  const form = useForm({ inputs: { color, triplet }, delay: 100 });
 
   React.useEffect(() => {
     if (form.changed.color) {
@@ -18,17 +15,23 @@ function ChangeHandlers() {
         Red: "Huey",
         Blue: "Dewey",
         Green: "Louie",
-      }[inputs.color.value];
-      inputs.triplet.meta.setValue(name);
+      }[color.value];
+      triplet.meta.setValue(name);
     }
-  }, [form.changed.color, inputs.color.value, inputs.triplet.meta]);
+  }, [color.value, form.changed.color, triplet.meta]);
 
   return (
     <form onSubmit={form.onSubmit}>
-      <Radio label="Color" {...color} options={colors} />
-      <Input label="Triplet" {...triplet} disabled />
+      <Input label="Color" type="radio" {...color} options={colors} />
+      <Input label="Triplet" {...triplet} />
     </form>
   );
 }
 
-export default React.memo(ChangeHandlers);
+export default ChangeHandlers;
+
+const colors = [
+  { label: "Red", value: "Red" },
+  { label: "Blue", value: "Blue" },
+  { label: "Green", value: "Green" },
+];

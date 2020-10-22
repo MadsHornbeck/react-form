@@ -10,17 +10,14 @@ const validate = [
 
 function ThousandInputs() {
   // Warning! Don't actually do this, it's only to test performance.
-  const inputArr = Array.from({ length: 1000 }).map((_, i) => [
+  const inputArr = Array.from({ length: 1000 }, (_, i) => [
     `input-${i}`,
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useInput({ validate }),
   ]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const inputs = React.useMemo(() => Object.fromEntries(inputArr), []);
-
   const form = useForm({
-    inputs,
+    inputs: Object.fromEntries(inputArr),
     handleSubmit: console.log,
   });
   return (
@@ -35,4 +32,4 @@ function ThousandInputs() {
   );
 }
 
-export default React.memo(ThousandInputs);
+export default ThousandInputs;

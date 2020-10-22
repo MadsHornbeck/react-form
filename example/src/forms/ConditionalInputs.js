@@ -1,7 +1,7 @@
 import React from "react";
 import { useInput, useForm } from "@hornbeck/react-form";
 
-import { Input } from "../inputComponents";
+import Input from "../Input";
 
 function useConditionalInputs(toggle) {
   const firstName = useInput();
@@ -9,16 +9,17 @@ function useConditionalInputs(toggle) {
   const email = useInput();
   const password = useInput();
 
-  const inputs = React.useMemo(
-    () => ({
+  const form = useForm({ handleSubmit: console.log });
+
+  React.useEffect(() => {
+    form.setInputs({
       ...(toggle && { firstName, lastName }),
       email,
       password,
-    }),
-    [email, firstName, lastName, password, toggle]
-  );
+    });
+  }, [email, firstName, form, lastName, password, toggle]);
 
-  return useForm({ inputs, handleSubmit: console.log });
+  return form;
 }
 
 function ConditionalInputs() {
@@ -29,12 +30,12 @@ function ConditionalInputs() {
   return (
     <form onSubmit={form.onSubmit}>
       <Input {...toggle} type="checkbox" label="Toggle" />
-      {Object.entries(form.inputs).map(([name, input]) => (
+      {[...form.inputs.entries()].map(([name, input]) => (
         <Input
           key={name}
           label={name}
-          {...input}
           type={name === "password" ? "password" : "text"}
+          {...input}
         />
       ))}
       <button type="submit">Submit</button>

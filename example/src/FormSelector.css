@@ -1,0 +1,10 @@
+.form-selector {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+}
+
+.form-selector button {
+  white-space: nowrap;
+}

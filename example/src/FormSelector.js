@@ -1,18 +1,29 @@
 import React from "react";
+import { splitPascal } from "./util";
+import "./FormSelector.css";
 
-export default function FormSelector({ forms }) {
-  const formKeys = Object.keys(forms);
+import * as forms from "./forms";
+const formKeys = Object.keys(forms);
+
+export default function FormSelector() {
   const [active, setActive] = React.useState(formKeys[0]);
   return (
-    <div className="form-selector">
-      <ul>
+    <>
+      <ul className="form-selector">
         {formKeys.map((key) => (
           <li key={key}>
-            <button onClick={() => setActive(key)}>{key}</button>
+            <button
+              className={active === key ? "active" : ""}
+              onClick={() => setActive(key)}
+            >
+              {splitPascal(key)}
+            </button>
           </li>
         ))}
       </ul>
-      <div>{React.createElement(forms[active])}</div>
-    </div>
+      <hr />
+      <h2>{splitPascal(active)}</h2>
+      {React.createElement(forms[active])}
+    </>
   );
 }

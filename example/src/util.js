@@ -4,3 +4,5 @@ export const wait = (data, ms = 500) =>
   });
 
 export const genId = () => Math.random().toString(36).slice(2);
+
+export const splitPascal = (s) => s.match(/[A-Z][a-z]+/g).join(" ");
