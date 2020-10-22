@@ -1,12 +1,11 @@
 import React from "react";
 
-import { noop, id, getEventValue, validateField } from "./util";
+import { noop, id, getEventValue, validateField, useUpdate } from "./util";
 
 // TODO: find out how to reset inputChanged if form unmount but input doesn't
 const defaultForm = { formErrors: {}, submitErrors: {}, inputChanged: noop };
 
 export default function useInput({
-  delay = 200,
   format = id,
   handleBlur = noop,
   handleChange = noop,
@@ -14,16 +13,14 @@ export default function useInput({
   initialValue = "",
   normalize = id,
   parse = id,
-  validate: validateFn = noop,
+  validate = noop,
 } = {}) {
   // TODO: Try to find a better name than: `actualValue`.
   const [actualValue, setActualValue] = React.useState(initialValue);
-  const [inputError, setError] = React.useState(undefined);
   const [touched, setTouched] = React.useState(false);
   const [active, setActive] = React.useState(false);
-  const [validating, setValidating] = React.useState(false);
   const form = React.useRef(defaultForm);
-  const input = React.useRef({});
+  const input = React.useRef({}).current;
   const ref = React.useRef();
 
   const setValue = React.useCallback(
@@ -48,9 +45,9 @@ export default function useInput({
       handleChange(e);
       const eventValue = getEventValue(e);
       setValue(eventValue);
-      form.current.inputChanged(input.current.name);
+      form.current.inputChanged(input.name, true);
     },
-    [handleChange, setValue]
+    [handleChange, input.name, setValue]
   );
 
   const onBlur = React.useCallback(
@@ -59,75 +56,30 @@ export default function useInput({
       setActive(false);
       setTouched(true);
       setActualValue(normalize);
-      // TODO: maybe add a validateOnBlur prop.
     },
     [handleBlur, normalize]
   );
 
-  const validate = React.useCallback(() => {
-    const error = validateField(validateFn)(actualValue);
-    if (error instanceof Promise) {
-      setValidating(true);
-      error.then((err) => {
-        setError(err);
-        setValidating(false);
-      });
-    } else {
-      setError(error);
-    }
-    return error;
-  }, [actualValue, validateFn]);
-
-  React.useEffect(() => {
-    if (!active && !touched) return;
-    const t = setTimeout(validate, delay);
-    return () => {
-      clearTimeout(t);
-    };
-  }, [active, delay, touched, validate]);
-
   React.useDebugValue(actualValue);
 
-  const error =
-    inputError ||
-    form.current.formErrors[input.current.name] ||
-    form.current.submitErrors[input.current.name];
-
   const dirty = actualValue !== initialValue;
-  const meta = React.useMemo(
-    () => ({
+
+  const meta = useMeta();
+
+  return Object.assign(input, {
+    meta: Object.assign(meta, {
       active,
       actualValue,
       dirty,
-      error,
       form,
-      inputError,
-      invalid: !!error,
       pristine: !dirty,
-      setError,
       setTouched,
       setValue,
       touched,
-      valid: !error,
       validate,
-      validating,
       visited: touched || active,
+      name: input.name,
     }),
-    [
-      active,
-      actualValue,
-      dirty,
-      error,
-      inputError,
-      setValue,
-      touched,
-      validate,
-      validating,
-    ]
-  );
-
-  return Object.assign(input.current, {
-    meta,
     onBlur,
     onChange,
     onFocus,
@@ -135,3 +87,50 @@ export default function useInput({
     value: active ? actualValue : format(actualValue),
   });
 }
+
+const fn = Symbol();
+const errorMap = Symbol();
+const useMeta = () => {
+  const update = useUpdate();
+  return React.useRef({
+    [errorMap]: new Map(),
+    get error() {
+      return (
+        (this.inputError instanceof Promise ? undefined : this.inputError) ||
+        this.form.current.formErrors[this.name] ||
+        this.form.current.submitErrors[this.name]
+      );
+    },
+    get inputError() {
+      const value = this.actualValue;
+      if (this[errorMap].has(value)) return this[errorMap].get(value);
+      const error = validateField(this[fn])(value);
+      if (
+        error instanceof Promise &&
+        !(this[errorMap].get(value) instanceof Promise)
+      ) {
+        error.then((e) => {
+          this[errorMap].set(value, e);
+          this.form.current.inputChanged(this.name, false);
+          update();
+        });
+      }
+      this[errorMap].set(value, error);
+      return error;
+    },
+    get valid() {
+      return !this.error;
+    },
+    get invalid() {
+      return !this.valid;
+    },
+    get validating() {
+      return this.inputError instanceof Promise;
+    },
+    set validate(f) {
+      // TODO: find better names here
+      if (this[fn] !== f) this[errorMap].clear();
+      this[fn] = f;
+    },
+  }).current;
+};

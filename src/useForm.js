@@ -14,7 +14,7 @@ export default function useForm({
 }) {
   const [inputs, setInputs] = useMap(is);
   const [changed, inputChanged] = useChanged(delay);
-  const form = React.useRef({});
+  const form = useFormRef();
 
   const setValues = React.useCallback(
     (values) => {
@@ -35,7 +35,7 @@ export default function useForm({
       input.name = name;
       input.meta.form.current = form.current;
     },
-    [inputs]
+    [form, inputs]
   );
 
   React.useEffect(() => {
@@ -43,53 +43,81 @@ export default function useForm({
       input.name = name;
       input.meta.form.current = form.current;
     }
-  }, [inputs]);
+  }, [form, inputs]);
 
   const [validateForm, formErrors, formValidating] = useValidation(
-    inputs,
+    form,
     validate
   );
 
   React.useEffect(() => {
-    if (changed !== emptyObj) validateForm();
+    validateForm();
   }, [changed, validateForm]);
 
   const [onSubmit, isSubmitting, submitErrors] = useSubmit({
+    form,
     handleSubmit,
-    inputs,
     validateForm,
   });
 
-  const inputArr = [...inputs.entries()];
-  const valid =
-    formErrors === emptyObj && inputArr.every(([, i]) => i.meta.valid);
-
-  const validating =
-    formValidating || inputArr.some(([, i]) => i.meta.validating);
-
-  const errors = Object.fromEntries(
-    inputArr.map(([n, i]) => [
-      n,
-      i.meta.inputError || formErrors[n] || submitErrors[n],
-    ])
-  );
-
   return Object.assign(form.current, {
     addInput,
-    canSubmit: !isSubmitting && valid,
     changed,
-    errors,
+    formValidating,
     formErrors,
     inputChanged,
     inputs,
-    invalid: !valid,
     isSubmitting,
     onSubmit,
     setInputs,
     setValues,
     submitErrors,
-    valid,
     validate: validateForm,
-    validating,
+  });
+}
+
+const errorMap = Symbol();
+
+function useFormRef() {
+  return React.useRef({
+    [errorMap]: new WeakMap(),
+    get values() {
+      return Object.fromEntries(
+        [...this.inputs].map(([n, i]) => [n, i.meta.actualValue])
+      );
+    },
+    get errors() {
+      if (this[errorMap].has(this.changed))
+        return this[errorMap].get(this.changed);
+      const errors = Object.fromEntries(
+        [...this.inputs.entries()].map(([n, i]) => [n, i.meta.error])
+      );
+      this[errorMap].set(this.changed, errors);
+      return errors;
+    },
+    get inputErrors() {
+      return Object.fromEntries(
+        [...this.inputs].map(([n, i]) => [n, i.meta.inputError])
+      );
+    },
+    // TODO: add formErrors here somehow.
+    get validating() {
+      return (
+        this.formValidating ||
+        [...this.inputs.values()].some((i) => i.meta.validating)
+      );
+    },
+    get valid() {
+      return (
+        this.formErrors === emptyObj &&
+        [...this.inputs.values()].every((i) => i.meta.valid)
+      );
+    },
+    get invalid() {
+      return !this.valid;
+    },
+    get canSubmit() {
+      return !this.isSubmitting && this.valid;
+    },
   });
 }

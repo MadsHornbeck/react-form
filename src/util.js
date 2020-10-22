@@ -35,19 +35,26 @@ const createMap = (obj, fn) => {
   for (const k of ["clear", "delete", "set"]) {
     const f = map[k];
     map[k] = (...args) => {
-      fn({});
+      fn();
       return f.apply(map, args);
     };
   }
   return map;
 };
 
-export function useMap(obj) {
-  const [, update] = React.useState();
-  const [map, _setMap] = React.useState(createMap(obj, update));
-  const setMap = React.useCallback((obj) => {
-    _setMap(createMap(obj, update));
-  }, []);
+export function useUpdate() {
+  const [, up] = React.useState();
+  return React.useCallback(() => up({}), []);
+}
 
+export function useMap(obj) {
+  const update = useUpdate();
+  const [map, _setMap] = React.useState(createMap(obj, update));
+  const setMap = React.useCallback(
+    (obj) => {
+      _setMap(createMap(obj, update));
+    },
+    [update]
+  );
   return [map, setMap];
 }
