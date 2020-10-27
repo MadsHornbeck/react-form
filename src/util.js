@@ -44,7 +44,9 @@ const createMap = (obj, fn) => {
 
 export function useUpdate() {
   const [, up] = React.useState();
-  return React.useCallback(() => up({}), []);
+  return React.useCallback(() => {
+    up({});
+  }, []);
 }
 
 export function useMap(obj) {
@@ -57,4 +59,19 @@ export function useMap(obj) {
     [update]
   );
   return [map, setMap];
+}
+
+export function handleValidate(validate) {
+  return typeof validate === "function"
+    ? validate
+    : async (values, inputs) =>
+        Object.fromEntries(
+          // TODO: find a more elegant way of handling async validation in object
+          await Promise.all(
+            Object.entries(validate).map(async ([n, f]) => [
+              n,
+              await validateField(f)(values[n], inputs),
+            ])
+          )
+        );
 }

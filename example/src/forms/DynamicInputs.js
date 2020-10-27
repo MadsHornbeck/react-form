@@ -8,6 +8,13 @@ import Input from "../Input";
 function DynamicInputs() {
   const form = useForm({ handleSubmit: console.log });
 
+  const addInput = React.useCallback(
+    (name, input) => {
+      form.inputs.set(name, input);
+    },
+    [form.inputs]
+  );
+
   return (
     <div>
       <button
@@ -23,7 +30,7 @@ function DynamicInputs() {
       <button onClick={form.inputs.clear}>Remove all inputs</button>
       <form onSubmit={form.onSubmit}>
         {[...form.inputs.keys()].map((name) => (
-          <Dynamic key={name} name={name} addInput={form.addInput} />
+          <Dynamic key={name} name={name} addInput={addInput} />
         ))}
         <button type="submit">Submit</button>
       </form>

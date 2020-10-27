@@ -1,98 +1,92 @@
 import React from "react";
 
-import useChanged from "./useChanged";
 import useSubmit from "./useSubmit";
-import useValidation from "./useValidation";
-import { emptyObj, useMap } from "./util";
+import { emptyObj, handleValidate, noop, useMap, useUpdate } from "./util";
 
 export default function useForm({
   handleSubmit,
   initialValues = {},
   inputs: is = {},
-  validate,
-  delay = 200,
+  validate = noop,
 }) {
   const [inputs, setInputs] = useMap(is);
-  const [changed, inputChanged] = useChanged(delay);
   const form = useFormRef();
 
   const setValues = React.useCallback(
     (values) => {
       Object.entries(values)
         .filter(([name]) => inputs.has(name))
-        .forEach(([name, value]) => inputs.get(name).meta.setValue(value));
+        .forEach(([name, value]) => {
+          inputs.get(name).meta.setValue(value, true);
+        });
     },
     [inputs]
   );
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   React.useEffect(() => {
     setValues(initialValues);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    return () => {
+      form.current.unmounted = true;
+    };
+  }, []);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
-  const addInput = React.useCallback(
-    (name, input) => {
-      inputs.set(name, input);
-      input.name = name;
-      input.meta.form.current = form.current;
-    },
-    [form, inputs]
-  );
+  // TODO: maybe make this not run every render.
+  for (const [name, input] of inputs.entries()) {
+    if (!input) continue;
+    input.name = name;
+    input.meta.name = name;
+    input.meta.form.current = form.current;
+  }
 
-  React.useEffect(() => {
-    for (const [name, input] of inputs.entries()) {
-      input.name = name;
-      input.meta.form.current = form.current;
-    }
-  }, [form, inputs]);
-
-  const [validateForm, formErrors, formValidating] = useValidation(
-    form,
-    validate
-  );
-
-  React.useEffect(() => {
-    validateForm();
-  }, [changed, validateForm]);
-
-  const [onSubmit, isSubmitting, submitErrors] = useSubmit({
-    form,
-    handleSubmit,
-    validateForm,
-  });
+  const [onSubmit, isSubmitting, submitErrors] = useSubmit(form, handleSubmit);
 
   return Object.assign(form.current, {
-    addInput,
-    changed,
-    formValidating,
-    formErrors,
-    inputChanged,
     inputs,
     isSubmitting,
     onSubmit,
     setInputs,
     setValues,
     submitErrors,
-    validate: validateForm,
+    validate,
   });
 }
 
 const errorMap = Symbol();
+const formErrorMap = Symbol();
+const values = Symbol();
+const changed = Symbol();
 
 function useFormRef() {
+  const update = useUpdate();
   return React.useRef({
     [errorMap]: new WeakMap(),
+    [formErrorMap]: new WeakMap(),
+    get changed() {
+      const c = [...this.inputs].filter(([, i]) => i.meta.changed);
+      if (c.length) {
+        this[changed] = Object.fromEntries(c);
+        for (const [, i] of c) i.meta.changed = false;
+        this[values] = undefined;
+      }
+      return this[changed] || emptyObj;
+    },
     get values() {
-      return Object.fromEntries(
-        [...this.inputs].map(([n, i]) => [n, i.meta.actualValue])
-      );
+      if (this.changed && !this[values]) {
+        this[values] = Object.fromEntries(
+          [...this.inputs].map(([n, i]) => [n, i.meta.actualValue])
+        );
+      }
+      return this[values];
     },
     get errors() {
-      if (this[errorMap].has(this.changed))
-        return this[errorMap].get(this.changed);
+      const { values } = this;
+      if (this[errorMap].has(values)) return this[errorMap].get(values);
       const errors = Object.fromEntries(
-        [...this.inputs.entries()].map(([n, i]) => [n, i.meta.error])
+        [...this.inputs].map(([n, i]) => [n, i.meta.error])
       );
-      this[errorMap].set(this.changed, errors);
+      this[errorMap].set(values, errors);
       return errors;
     },
     get inputErrors() {
@@ -100,7 +94,25 @@ function useFormRef() {
         [...this.inputs].map(([n, i]) => [n, i.meta.inputError])
       );
     },
-    // TODO: add formErrors here somehow.
+    get formErrors() {
+      if (this.validate === noop) return emptyObj;
+      const { values } = this;
+      if (!this[formErrorMap].has(values)) {
+        const errors = handleValidate(this.validate)(values, this.inputs);
+        this[formErrorMap].set(values, errors);
+        if (errors instanceof Promise) {
+          errors.then((e) => {
+            if (this.unmounted) return;
+            this[formErrorMap].set(values, e);
+            update();
+          });
+        }
+      }
+      return this[formErrorMap].get(values) || emptyObj;
+    },
+    get formValidating() {
+      return this.formErrors instanceof Promise;
+    },
     get validating() {
       return (
         this.formValidating ||

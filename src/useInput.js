@@ -1,11 +1,13 @@
 import React from "react";
 
+window.React = React;
+
 import { noop, id, getEventValue, validateField, useUpdate } from "./util";
 
-// TODO: find out how to reset inputChanged if form unmount but input doesn't
-const defaultForm = { formErrors: {}, submitErrors: {}, inputChanged: noop };
+const defaultForm = { formErrors: {}, submitErrors: {} };
 
 export default function useInput({
+  delay = 200,
   format = id,
   handleBlur = noop,
   handleChange = noop,
@@ -22,14 +24,26 @@ export default function useInput({
   const form = React.useRef(defaultForm);
   const input = React.useRef({}).current;
   const ref = React.useRef();
+  const update = useUpdate();
+  const meta = useMeta(update);
+
+  const t = React.useRef();
+  const setChanged = React.useCallback(() => {
+    clearTimeout(t.current);
+    t.current = setTimeout(() => {
+      meta.changed = true;
+      update();
+    }, delay);
+  }, [delay, meta, update]);
 
   const setValue = React.useCallback(
-    (value) => {
+    (value, changed) => {
       setActualValue((prevValue) =>
         parse(typeof value === "function" ? value(prevValue) : value, prevValue)
       );
+      if (changed) setChanged();
     },
-    [parse]
+    [parse, setChanged]
   );
 
   const onFocus = React.useCallback(
@@ -44,10 +58,9 @@ export default function useInput({
     (e) => {
       handleChange(e);
       const eventValue = getEventValue(e);
-      setValue(eventValue);
-      form.current.inputChanged(input.name, true);
+      setValue(eventValue, true);
     },
-    [handleChange, input.name, setValue]
+    [handleChange, setValue]
   );
 
   const onBlur = React.useCallback(
@@ -60,26 +73,31 @@ export default function useInput({
     [handleBlur, normalize]
   );
 
+  React.useEffect(
+    () => () => {
+      meta.unmounted = true;
+      clearTimeout(t.current);
+    },
+    [meta]
+  );
+
   React.useDebugValue(actualValue);
 
   const dirty = actualValue !== initialValue;
-
-  const meta = useMeta();
-
+  Object.assign(meta, {
+    active,
+    actualValue,
+    dirty,
+    form,
+    pristine: !dirty,
+    setTouched,
+    setValue,
+    touched,
+    validate,
+    visited: touched || active,
+  });
   return Object.assign(input, {
-    meta: Object.assign(meta, {
-      active,
-      actualValue,
-      dirty,
-      form,
-      pristine: !dirty,
-      setTouched,
-      setValue,
-      touched,
-      validate,
-      visited: touched || active,
-      name: input.name,
-    }),
+    meta,
     onBlur,
     onChange,
     onFocus,
@@ -88,35 +106,33 @@ export default function useInput({
   });
 }
 
-const fn = Symbol();
+const validate = Symbol();
 const errorMap = Symbol();
-const useMeta = () => {
-  const update = useUpdate();
+
+const useMeta = (update) => {
   return React.useRef({
     [errorMap]: new Map(),
     get error() {
+      const form = this.form.current;
       return (
-        (this.inputError instanceof Promise ? undefined : this.inputError) ||
-        this.form.current.formErrors[this.name] ||
-        this.form.current.submitErrors[this.name]
+        (!this.validating && this.inputError) ||
+        (!form.formValidating ? form.formErrors : form.submitErrors)[this.name]
       );
     },
     get inputError() {
       const value = this.actualValue;
-      if (this[errorMap].has(value)) return this[errorMap].get(value);
-      const error = validateField(this[fn])(value);
-      if (
-        error instanceof Promise &&
-        !(this[errorMap].get(value) instanceof Promise)
-      ) {
-        error.then((e) => {
-          this[errorMap].set(value, e);
-          this.form.current.inputChanged(this.name, false);
-          update();
-        });
+      if (!this[errorMap].has(value)) {
+        const error = validateField(this[validate])(value);
+        if (error instanceof Promise) {
+          error.then((e) => {
+            if (this.unmounted) return;
+            this[errorMap].set(value, e);
+            update();
+          });
+        }
+        this[errorMap].set(value, error);
       }
-      this[errorMap].set(value, error);
-      return error;
+      return this[errorMap].get(value);
     },
     get valid() {
       return !this.error;
@@ -128,9 +144,8 @@ const useMeta = () => {
       return this.inputError instanceof Promise;
     },
     set validate(f) {
-      // TODO: find better names here
-      if (this[fn] !== f) this[errorMap].clear();
-      this[fn] = f;
+      if (this[validate] !== f) this[errorMap].clear();
+      this[validate] = f;
     },
   }).current;
 };

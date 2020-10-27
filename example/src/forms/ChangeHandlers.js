@@ -15,10 +15,14 @@ function ChangeHandlers() {
         Red: "Huey",
         Blue: "Dewey",
         Green: "Louie",
-      }[color.value];
+      }[form.changed.color.value];
       triplet.meta.setValue(name);
     }
-  }, [color.value, form.changed.color, triplet.meta]);
+  }, [form.changed, triplet.meta]);
+  // Warning! If you just use the eslint autofix you will get this:
+  // `[form.changed.color, triplet.meta]` which wont work.
+  // You need to include `form.changed` as otherwise it wont
+  // be able to detect successive changes to the same input.
 
   return (
     <form onSubmit={form.onSubmit}>

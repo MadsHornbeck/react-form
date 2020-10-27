@@ -3,6 +3,8 @@
 - `useInput`
 - `useForm`
 
+All props designated with `(lazy)` are only evaluated when accessed.
+
 ## `useInput`
 
 ### Parameters
@@ -29,21 +31,21 @@ input - the object returned from this hook will have stable referential identity
 - input props
   - value - the value of the input
 - meta
-  - error - error for the input, either from input, form, or submit validation
+  - error (lazy) - error for the input, either from input, form, or submit validation
   - active - true when the input has focus
   - touched - whenever an input is blurred touched is set to true
   - visited - true if input has ever had focus
   - dirty - true if value is the same as initialValue
   - pristine - opposite of dirty
-  - valid - true if error is falsy
-  - validating - true if the input is currently doing async validation
-  - invalid - opposite of valid
+  - valid (lazy) - true if error is falsy
+  - invalid (lazy) - inverse of valid
+  - validating (lazy) - true if the input is currently doing async validation
   - actualValue - the value as it's stored, different from the value property only when format is being used and `meta.active` is false.
   - setError - allows for the setting of the input error
   - setTouched - allows for the setting the input as touched
   - setValue - allows for the setting of the input value
   - form - reference to the form object the input is used in
-  - inputError - the input level error
+  - inputError (lazy) - the input level error
 
 ## `useForm`
 
@@ -60,13 +62,17 @@ Basic
 ### return
 
 - inputs - inputs as passed as props
-- isSubmitting - is true when submit is called and not finished in case of async submit
 - onSubmit - should be passed to form. Alternatively can be called seperately
+- values (lazy) - all the values of the inputs in the form in an keyed object
 - setValues - allows for setting of all values in form
-- errors - object containing all errors for all field as `{[inputName]: error}`
 - setInputs - `(inputs: object) => void` sets the inputs of the form to the passed object
-- setChanged - `(name: string) => void` sets the changed state for a specific input, this will trigger form validation and the `changed` object will be updated
-- formErrors - object containing all form level errors
+- errors (lazy) - object containing all errors for all field as `{[inputName]: error}`
+- formErrors (lazy) - object containing all form level errors
 - submitErrors - object containing all submit level errors
-- validate - function that validates the form, returns the errors from the validate function passed
-- changed - an object with input names as keys and whether they've changed as a boolean value
+- validate - the function / object passed in as validate
+- validating (lazy) - `true` if the form is currently doing async validation
+- changed (lazy) - an object with input names as keys and whether they've changed as a boolean value
+- isSubmitting (lazy) - is true when submit is called and not finished in case of async submit
+- valid (lazy) - true if there are no errors
+- invalid (lazy) - inverse of valid
+- canSubmit (lazy) - `!isSubmitting && valid`

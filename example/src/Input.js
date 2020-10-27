@@ -21,6 +21,7 @@ function Input({ meta, label, ...input }, ref) {
           ...input,
           ref,
           value: input.type === "file" ? undefined : input.value,
+          "aria-invalid": meta.touched && meta.invalid,
         }
       )}
       {meta.touched && meta.invalid && <em> {meta.error}</em>}
