@@ -57,7 +57,6 @@ Basic
 - handleSubmit - is called with values from all inputs when form is submitted
 - initialValues - object of values that will be the initial values, this will overwrite any value set on the individual inputs
 - validate - a function or validate the inputs, should return an object with `{ [inputName]: error }`
-- delay - a number that specifies the delay between the last change to an input and when validation is run and `useForm.changed` is updated. - default: 200
 
 ### return
 

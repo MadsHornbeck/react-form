@@ -15,7 +15,7 @@ export default function useSubmit(form, handleSubmit) {
       for (const i of inputs.values()) i.meta.setTouched(true);
 
       const inpErrs = await Promise.all(Object.values(inputErrors));
-      const valid = !inpErrs.some(Boolean) && !(await formErrors);
+      const valid = !inpErrs.some(Boolean) && (await formErrors) === emptyObj;
       if (valid) setErrors((await handleSubmit(values)) || emptyObj);
       setIsSubmitting(false);
     },
