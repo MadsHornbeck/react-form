@@ -23,14 +23,9 @@ export default function useForm({
     [inputs]
   );
 
-  /* eslint-disable react-hooks/exhaustive-deps */
   React.useEffect(() => {
     setValues(initialValues);
-    return () => {
-      form.current.unmounted = true;
-    };
-  }, []);
-  /* eslint-enable react-hooks/exhaustive-deps */
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // TODO: maybe make this not run every render.
   for (const [name, input] of inputs.entries()) {
@@ -63,8 +58,9 @@ function useFormRef() {
   return React.useRef({
     [errorMap]: new WeakMap(),
     [formErrorMap]: new WeakMap(),
+    update,
     get changed() {
-      const c = [...this.inputs].filter(([, i]) => i.meta.changed);
+      const c = [...this.inputs].filter(([, i]) => i && i.meta.changed);
       if (c.length) {
         this[changed] = Object.fromEntries(c);
         for (const [, i] of c) i.meta.changed = false;
@@ -102,7 +98,6 @@ function useFormRef() {
         this[formErrorMap].set(values, errors);
         if (errors instanceof Promise) {
           errors.then((e) => {
-            if (this.unmounted) return;
             this[formErrorMap].set(values, e);
             update();
           });

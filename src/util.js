@@ -30,6 +30,15 @@ export const validateField = (validate) => {
   };
 };
 
+export function useUpdate() {
+  const [, up] = React.useState();
+  const r = React.useRef();
+  React.useEffect(() => () => (r.current = true), []);
+  return React.useCallback(() => {
+    if (!r.current) up({});
+  }, []);
+}
+
 const createMap = (obj, fn) => {
   const map = new Map(Object.entries(obj));
   for (const k of ["clear", "delete", "set"]) {
@@ -41,13 +50,6 @@ const createMap = (obj, fn) => {
   }
   return map;
 };
-
-export function useUpdate() {
-  const [, up] = React.useState();
-  return React.useCallback(() => {
-    up({});
-  }, []);
-}
 
 export function useMap(obj) {
   const update = useUpdate();

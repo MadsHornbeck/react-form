@@ -45,7 +45,7 @@ Select.displayName = "Select";
 const Radio = React.forwardRef(({ options = [], ...input }, ref) =>
   options.map(({ label, value }) => (
     <label key={value}>
-      <input {...input} value={value} />
+      <input {...input} value={value} ref={input.checked && ref} />
       <span>{label}</span>
     </label>
   ))

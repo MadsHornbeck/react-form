@@ -4,8 +4,6 @@ window.React = React;
 
 import { noop, id, getEventValue, validateField, useUpdate } from "./util";
 
-const defaultForm = { formErrors: {}, submitErrors: {} };
-
 export default function useInput({
   delay = 200,
   format = id,
@@ -21,20 +19,20 @@ export default function useInput({
   const [actualValue, setActualValue] = React.useState(initialValue);
   const [touched, setTouched] = React.useState(false);
   const [active, setActive] = React.useState(false);
-  const form = React.useRef(defaultForm);
+  const form = React.useRef();
   const input = React.useRef({}).current;
   const ref = React.useRef();
-  const update = useUpdate();
-  const meta = useMeta(update);
+  const meta = useMeta();
 
   const t = React.useRef();
   const setChanged = React.useCallback(() => {
+    if (!meta.form.current) return;
     clearTimeout(t.current);
     t.current = setTimeout(() => {
       meta.changed = true;
-      update();
+      meta.form.current.update();
     }, delay);
-  }, [delay, meta, update]);
+  }, [delay, meta]);
 
   const setValue = React.useCallback(
     (value, changed) => {
@@ -73,13 +71,7 @@ export default function useInput({
     [handleBlur, normalize]
   );
 
-  React.useEffect(
-    () => () => {
-      meta.unmounted = true;
-      clearTimeout(t.current);
-    },
-    [meta]
-  );
+  React.useEffect(() => () => clearTimeout(t.current), [meta]);
 
   React.useDebugValue(actualValue);
 
@@ -108,12 +100,14 @@ export default function useInput({
 
 const validate = Symbol();
 const errorMap = Symbol();
+const dummyForm = { formErrors: {} };
 
-const useMeta = (update) => {
+const useMeta = () => {
+  const update = useUpdate();
   return React.useRef({
     [errorMap]: new Map(),
     get error() {
-      const form = this.form.current;
+      const form = this.form.current || dummyForm;
       return (
         (!this.validating && this.inputError) ||
         (!form.formValidating ? form.formErrors : form.submitErrors)[this.name]
@@ -125,7 +119,6 @@ const useMeta = (update) => {
         const error = validateField(this[validate])(value);
         if (error instanceof Promise) {
           error.then((e) => {
-            if (this.unmounted) return;
             this[errorMap].set(value, e);
             update();
           });
