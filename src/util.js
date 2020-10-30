@@ -31,12 +31,15 @@ export const validateField = (validate) => {
 };
 
 export function useUpdate() {
-  const [, up] = React.useState();
-  const r = React.useRef();
-  React.useEffect(() => () => (r.current = true), []);
-  return React.useCallback(() => {
-    if (!r.current) up({});
+  const [, update] = React.useState();
+  const cb = React.useRef(noop);
+  React.useEffect(() => {
+    cb.current = () => update({});
+    return () => {
+      cb.current = noop;
+    };
   }, []);
+  return () => cb.current();
 }
 
 const createMap = (obj, fn) => {
