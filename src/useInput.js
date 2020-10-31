@@ -1,8 +1,14 @@
 import React from "react";
 
-window.React = React;
-
-import { noop, id, getEventValue, validateField, useUpdate } from "./util";
+import {
+  get,
+  getEventValue,
+  id,
+  inputIdentifier,
+  noop,
+  useUpdate,
+  validateField,
+} from "./util";
 
 export default function useInput({
   delay = 200,
@@ -20,7 +26,7 @@ export default function useInput({
   const [touched, setTouched] = React.useState(false);
   const [active, setActive] = React.useState(false);
   const form = React.useRef();
-  const input = React.useRef({}).current;
+  const input = React.useRef({ [inputIdentifier]: true }).current;
   const ref = React.useRef();
   const meta = useMeta();
 
@@ -98,8 +104,8 @@ export default function useInput({
   });
 }
 
-const validate = Symbol();
-const errorMap = Symbol();
+const validate = Symbol("Validate function");
+const errorMap = Symbol("Errors");
 const dummyForm = { formErrors: {} };
 
 const useMeta = () => {
@@ -110,7 +116,10 @@ const useMeta = () => {
       const form = this.form.current || dummyForm;
       return (
         (!this.validating && this.inputError) ||
-        (!form.formValidating ? form.formErrors : form.submitErrors)[this.name]
+        get(
+          !form.formValidating ? form.formErrors : form.submitErrors,
+          this.name
+        )
       );
     },
     get inputError() {

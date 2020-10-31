@@ -60,6 +60,8 @@ Basic
 
 ### return
 
+form - the object returned from this hook will have stable referential identity.
+
 - inputs - inputs as passed as props
 - onSubmit - should be passed to form. Alternatively can be called seperately
 - values (lazy) - all the values of the inputs in the form in an keyed object

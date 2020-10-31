@@ -4,49 +4,53 @@ import * as validators from "@hornbeck/validators";
 
 import Input from "../Input";
 
-// TODO: consider making a hook for handling this scenario.
 function DynamicInputs() {
-  const form = useForm({ handleSubmit: console.log });
-
-  const addInput = React.useCallback(
-    (name, input) => {
-      form.inputs.set(name, input);
-    },
-    [form.inputs]
-  );
+  const name = useInput({ validate: required });
+  const [friendsCount, setFriendsCount] = React.useState(0);
+  const form = useForm({ inputs: { name }, handleSubmit: console.log });
 
   return (
-    <div>
-      <button
-        onClick={() => {
-          const i = form.inputs.size / 2;
-          form.inputs
-            .set(`friends[${i}].firstName`)
-            .set(`friends[${i}].lastName`);
-        }}
-      >
-        Add input
-      </button>
-      <button onClick={form.inputs.clear}>Remove all inputs</button>
-      <form onSubmit={form.onSubmit}>
-        {[...form.inputs.keys()].map((name) => (
-          <Dynamic key={name} name={name} addInput={addInput} />
+    <form onSubmit={form.onSubmit}>
+      <Input label="Name" {...name} />
+      <div>
+        <span>Friends </span>
+        <button type="button" onClick={() => setFriendsCount((f) => f + 1)}>
+          Add friend
+        </button>
+        <button type="button" onClick={() => setFriendsCount(0)}>
+          Remove all friends
+        </button>
+      </div>
+      <ol>
+        {Array.from({ length: friendsCount }).map((_, i) => (
+          <li key={i}>
+            <Friend prefix={`friends[${i}]`} inputs={form.inputs} />
+          </li>
         ))}
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+      </ol>
+      <button type="submit">Submit</button>
+    </form>
   );
 }
 
-export default React.memo(DynamicInputs);
+export default DynamicInputs;
 
-const Dynamic = React.memo(({ name, addInput }) => {
-  const input = useInput({ validate });
-  React.useEffect(() => addInput(name, input), [addInput, input, name]);
-  return <Input {...input} label={name} />;
-});
+function Friend({ prefix, inputs }) {
+  const name = useInput({ validate: required });
+  const age = useInput({ validate: required });
+  React.useEffect(() => {
+    inputs.set(`${prefix}.name`, name).set(`${prefix}.age`, age);
+    return () => {
+      inputs.delete(`${prefix}.name`);
+      inputs.delete(`${prefix}.age`);
+    };
+  }, [age, inputs, name, prefix]);
+  return (
+    <>
+      <Input {...name} label="Name" />
+      <Input {...age} label="Age" />
+    </>
+  );
+}
 
-const validate = [
-  validators.required("Required"),
-  validators.minLength(3, "Must be at least 3 characters"),
-];
+const required = validators.required("Required");

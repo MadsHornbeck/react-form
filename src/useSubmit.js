@@ -11,11 +11,13 @@ export default function useSubmit(form, handleSubmit) {
       e.preventDefault();
       if (isSubmitting) return;
       setIsSubmitting(true);
-      const { values, inputErrors, inputs, formErrors } = form.current;
+      const { values, inputs, formErrors } = form.current;
       for (const i of inputs.values()) i.meta.setTouched(true);
 
-      const inpErrs = await Promise.all(Object.values(inputErrors));
-      const valid = !inpErrs.some(Boolean) && (await formErrors) === emptyObj;
+      const inputErrors = [...inputs.values()].map((i) => i.meta.inputError);
+      const valid =
+        !(await Promise.all(inputErrors)).some(Boolean) &&
+        (await formErrors) === emptyObj;
       if (valid) setErrors((await handleSubmit(values)) || emptyObj);
       setIsSubmitting(false);
     },

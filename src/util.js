@@ -42,8 +42,19 @@ export function useUpdate() {
   return () => cb.current();
 }
 
+export const inputIdentifier = Symbol("InputIdentifier");
+
+const nestedObjEntries = (obj, pre = "") =>
+  Object.entries(obj).reduce((ent, [k, v]) => {
+    if (!v) return ent;
+    const prefix = !pre ? k : pre + (isUInt(k) ? `[${k}]` : `.${k}`);
+    return ent.concat(
+      v[inputIdentifier] ? [[prefix, v]] : nestedObjEntries(v, prefix)
+    );
+  }, []);
+
 const createMap = (obj, fn) => {
-  const map = new Map(Object.entries(obj));
+  const map = new Map(nestedObjEntries(obj));
   for (const k of ["clear", "delete", "set"]) {
     const f = map[k];
     map[k] = (...args) => {
@@ -56,7 +67,7 @@ const createMap = (obj, fn) => {
 
 export function useMap(obj) {
   const update = useUpdate();
-  const [map, _setMap] = React.useState(createMap(obj, update));
+  const [map, _setMap] = React.useState(() => createMap(obj, update));
   const setMap = React.useCallback(
     (obj) => {
       _setMap(createMap(obj, update));
@@ -80,3 +91,22 @@ export function handleValidate(validate) {
           )
         );
 }
+
+export const toObj = (entries, fn = id) => {
+  const obj = {};
+  for (const [k, v] of entries) setM(obj, toPath(k), fn(v));
+  return obj;
+};
+
+const setM = (obj, [head, ...tail], value) => {
+  const temp = obj || (isUInt(head) ? [] : {});
+  temp[head] = tail.length ? setM(obj && obj[head], tail, value) : value;
+  return temp;
+};
+
+export const get = (obj, path) =>
+  (Array.isArray(path) ? path : toPath(path)).reduce((o, h) => o && o[h], obj);
+
+const toPath = (str) => str.split(/[.[\]]/).filter(Boolean);
+
+const isUInt = (str) => /^(?:0|[1-9]\d*)$/.test(str);

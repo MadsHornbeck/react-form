@@ -1,7 +1,14 @@
 import React from "react";
 
 import useSubmit from "./useSubmit";
-import { emptyObj, handleValidate, noop, useMap, useUpdate } from "./util";
+import {
+  emptyObj,
+  handleValidate,
+  noop,
+  toObj,
+  useMap,
+  useUpdate,
+} from "./util";
 
 export default function useForm({
   handleSubmit,
@@ -48,10 +55,10 @@ export default function useForm({
   });
 }
 
-const errorMap = Symbol();
-const formErrorMap = Symbol();
-const values = Symbol();
-const changed = Symbol();
+const errorMap = Symbol("Errors");
+const formErrorMap = Symbol("FormErrors");
+const values = Symbol("Values");
+const changed = Symbol("Changed");
 
 function useFormRef() {
   const update = useUpdate();
@@ -60,9 +67,9 @@ function useFormRef() {
     [formErrorMap]: new WeakMap(),
     update,
     get changed() {
-      const c = [...this.inputs].filter(([, i]) => i && i.meta.changed);
+      const c = [...this.inputs].filter(([, i]) => i.meta.changed);
       if (c.length) {
-        this[changed] = Object.fromEntries(c);
+        this[changed] = toObj(c);
         for (const [, i] of c) i.meta.changed = false;
         this[values] = undefined;
       }
@@ -70,25 +77,19 @@ function useFormRef() {
     },
     get values() {
       if (this.changed && !this[values]) {
-        this[values] = Object.fromEntries(
-          [...this.inputs].map(([n, i]) => [n, i.meta.actualValue])
-        );
+        this[values] = toObj(this.inputs.entries(), (i) => i.meta.actualValue);
       }
       return this[values];
     },
     get errors() {
       const { values } = this;
       if (this[errorMap].has(values)) return this[errorMap].get(values);
-      const errors = Object.fromEntries(
-        [...this.inputs].map(([n, i]) => [n, i.meta.error])
-      );
+      const errors = toObj(this.inputs.entries(), (i) => i.meta.error);
       this[errorMap].set(values, errors);
       return errors;
     },
     get inputErrors() {
-      return Object.fromEntries(
-        [...this.inputs].map(([n, i]) => [n, i.meta.inputError])
-      );
+      return toObj(this.inputs.entries(), (i) => i.meta.inputError);
     },
     get formErrors() {
       if (this.validate === noop) return emptyObj;
