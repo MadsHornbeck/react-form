@@ -104,9 +104,11 @@ const setM = (obj, [head, ...tail], value) => {
   return temp;
 };
 
-export const get = (obj, path) =>
-  (Array.isArray(path) ? path : toPath(path)).reduce((o, h) => o && o[h], obj);
+export const get = (obj, path) => {
+  const p = toPath(path);
+  return p.length ? p.reduce((o, h) => o && o[h], obj) : undefined;
+};
 
-const toPath = (str) => str.split(/[.[\]]/).filter(Boolean);
+const toPath = (str = "") => str.split(/[.[\]]/).filter(Boolean);
 
 const isUInt = (str) => /^(?:0|[1-9]\d*)$/.test(str);
