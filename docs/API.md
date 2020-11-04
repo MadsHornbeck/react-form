@@ -17,6 +17,7 @@ Basic
 - parse - values are parsed then normalized before set in input state
 - normalize - run on blur and allows you to normalize the value e.g. convert it to all uppercase
 - delay - the delay between the last user input and when the input level validation is run - default: 200
+- addToFrom - `{ form, name }` - pass in form and name of input, used to dynamically add inputs to forms. When useInput hook unmounts it's removed from the form if added to a form this way.
 
 Events
 

@@ -11,6 +11,7 @@ import {
 } from "./util";
 
 export default function useInput({
+  addToForm: { form: addForm, name } = {},
   delay = 200,
   format = id,
   handleBlur = noop,
@@ -21,7 +22,6 @@ export default function useInput({
   parse = id,
   validate = noop,
 } = {}) {
-  // TODO: Try to find a better name than: `actualValue`.
   const [actualValue, setActualValue] = React.useState(initialValue);
   const [touched, setTouched] = React.useState(false);
   const [active, setActive] = React.useState(false);
@@ -77,7 +77,17 @@ export default function useInput({
     [handleBlur, normalize]
   );
 
-  React.useEffect(() => () => clearTimeout(t.current), [meta]);
+  React.useEffect(() => {
+    if (name && addForm) {
+      if (addForm.inputs.has(name))
+        console.error(`Form cannot have two inputs with the name: "${name}"`);
+      addForm.inputs.set(name, input);
+    }
+    return () => {
+      if (name && addForm) addForm.inputs.delete(name);
+      clearTimeout(t.current);
+    };
+  }, [addForm, input, name]);
 
   React.useDebugValue(actualValue);
 

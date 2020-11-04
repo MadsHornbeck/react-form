@@ -24,7 +24,7 @@ function DynamicInputs() {
       <ol>
         {Array.from({ length: friendsCount }).map((_, i) => (
           <li key={i}>
-            <Friend prefix={`friends[${i}]`} inputs={form.inputs} />
+            <Friend prefix={`friends[${i}]`} form={form} />
           </li>
         ))}
       </ol>
@@ -35,16 +35,15 @@ function DynamicInputs() {
 
 export default DynamicInputs;
 
-function Friend({ prefix, inputs }) {
-  const name = useInput({ validate: required });
-  const age = useInput({ validate: required });
-  React.useEffect(() => {
-    inputs.set(`${prefix}.name`, name).set(`${prefix}.age`, age);
-    return () => {
-      inputs.delete(`${prefix}.name`);
-      inputs.delete(`${prefix}.age`);
-    };
-  }, [age, inputs, name, prefix]);
+function Friend({ prefix, form }) {
+  const name = useInput({
+    validate: required,
+    addToForm: { form, name: `${prefix}.name` },
+  });
+  const age = useInput({
+    validate: required,
+    addToForm: { form, name: `${prefix}.age` },
+  });
   return (
     <>
       <Input {...name} label="Name" />
