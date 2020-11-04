@@ -1,14 +1,7 @@
 import React from "react";
 
 import useSubmit from "./useSubmit";
-import {
-  emptyObj,
-  handleValidate,
-  noop,
-  toObj,
-  useMap,
-  useUpdate,
-} from "./util";
+import { emptyObj, noop, toObj, useMap, useUpdate } from "./util";
 
 export default function useForm({
   handleSubmit,
@@ -95,7 +88,7 @@ function useFormRef() {
       if (this.validate === noop) return emptyObj;
       const { values } = this;
       if (!this[formErrorMap].has(values)) {
-        const errors = handleValidate(this.validate)(values, this.inputs);
+        const errors = this.validate(values);
         this[formErrorMap].set(values, errors);
         if (errors instanceof Promise) {
           errors.then((e) => {

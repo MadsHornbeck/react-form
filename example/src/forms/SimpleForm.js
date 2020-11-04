@@ -4,8 +4,6 @@ import * as validators from "@hornbeck/validators";
 
 import Input from "../Input";
 
-const required = validators.required("Required");
-
 function SimpleForm() {
   const firstName = useInput({ validate: required });
   const lastName = useInput();
@@ -23,5 +21,7 @@ function SimpleForm() {
     </form>
   );
 }
+
+const required = validators.required("Required");
 
 export default SimpleForm;

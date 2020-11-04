@@ -40,7 +40,7 @@ function ComplexForm() {
       profilePicture,
     },
     handleSubmit: console.log,
-    validate: handleSubmit,
+    validate,
   });
 
   const isUnderage = age.value < 18;
@@ -88,6 +88,11 @@ const sexOptions = [
 
 const isRequired = validators.required("Required");
 
+const validate = validators.schema({
+  name: (v) => (v === "Paul" ? "Cannot be Paul" : undefined),
+  email: (v) => wait(/\.com/.test(v) ? undefined : "Must be a .com domain"),
+});
+
 const phoneFormat = (v) => {
   const local = v.slice(0, 3).padEnd(3, "_");
   const first = v.slice(3, 6).padEnd(3, "_");
@@ -97,12 +102,6 @@ const phoneFormat = (v) => {
 const phoneParse = (v) => v.match(/\d{1,10}/)?.[0] || "";
 
 const emailValidate = [isRequired, validators.email("Must be a valid email")];
-
-const handleSubmit = (values) =>
-  wait({
-    name: values.name === "Paul" ? "Cannot be Paul" : undefined,
-    email: /\.com/.test(values.email) ? undefined : "Must be a .com domain",
-  });
 
 const colors = [
   { label: "Red", value: "Red" },

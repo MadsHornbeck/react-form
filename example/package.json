@@ -14,9 +14,9 @@
   },
   "dependencies": {
     "@hornbeck/react-form": "file:..",
-    "@hornbeck/validators": "0.1.0",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
+    "@hornbeck/validators": "^0.2.2",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "react-scripts": "4.0.0"
   },
   "browserslist": {

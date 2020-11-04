@@ -20,15 +20,15 @@ export const getEventValue = (e) => {
   }
 };
 
-export const validateField = (validate) => {
-  if (typeof validate === "function") return validate;
-  return (value, inputs) => {
-    for (const func of validate) {
-      const error = func(value, inputs);
-      if (error) return error;
-    }
-  };
-};
+export const validateField = (validate) =>
+  typeof validate === "function"
+    ? validate
+    : (value) => {
+        for (const func of validate) {
+          const error = func(value);
+          if (error) return error;
+        }
+      };
 
 export function useUpdate() {
   const [, update] = React.useState();
@@ -75,21 +75,6 @@ export function useMap(obj) {
     [update]
   );
   return [map, setMap];
-}
-
-export function handleValidate(validate) {
-  return typeof validate === "function"
-    ? validate
-    : async (values, inputs) =>
-        Object.fromEntries(
-          // TODO: find a more elegant way of handling async validation in object
-          await Promise.all(
-            Object.entries(validate).map(async ([n, f]) => [
-              n,
-              await validateField(f)(values[n], inputs),
-            ])
-          )
-        );
 }
 
 export const toObj = (entries, fn = id) => {

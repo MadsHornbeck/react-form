@@ -57,6 +57,7 @@ Basic
 - handleSubmit - is called with values from all inputs when form is submitted
 - initialValues - object of values that will be the initial values, this will overwrite any value set on the individual inputs
 - validate - a function or validate the inputs, should return an object with `{ [inputName]: error }`
+  - use `@hornbeck/validators` `schema` for a simple way of doing this
 
 ### return
 
