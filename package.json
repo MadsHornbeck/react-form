@@ -1,6 +1,6 @@
 {
   "name": "@hornbeck/react-form",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "license": "MIT",
   "author": {
     "name": "Mads Hornbeck",
@@ -22,12 +22,14 @@
     "hooks",
     "react-hooks"
   ],
+  "main": "index.cjs",
   "module": "src/index.js",
   "sideEffects": false,
   "peerDependencies": {
     "react": "^16.8.0"
   },
   "files": [
+    "index.cjs",
     "src"
   ]
 }
