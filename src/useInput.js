@@ -20,7 +20,6 @@ export default function useInput({
   const [active, setActive] = React.useState(false);
   const form = React.useRef();
   const input = React.useRef({ [inputIdentifier]: true }).current;
-  const ref = React.useRef();
   const meta = useMeta();
 
   const t = React.useRef();
@@ -102,7 +101,6 @@ export default function useInput({
     onBlur,
     onChange,
     onFocus,
-    ref,
     value: active ? actualValue : format(actualValue),
   });
 }

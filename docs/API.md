@@ -31,6 +31,9 @@ input - the object returned from this hook will have stable referential identity
 
 - input props
   - value - the value of the input
+  - onBlur
+  - onChange
+  - onFocus
 - meta
   - error (lazy) - error for the input, either from input, form, or submit validation
   - active - true when the input has focus
@@ -64,7 +67,7 @@ Basic
 
 form - the object returned from this hook will have stable referential identity.
 
-- inputs - inputs as passed as props
+- inputs - inputs in Map<name, input>. If input is a nested input, the name will be something like: `"friends[0].name"`. Use `form.inputs.entries()` to get the inputs as an iterator.
 - onSubmit - should be passed to form. Alternatively can be called seperately
 - values (lazy) - all the values of the inputs in the form in an keyed object
 - setValues - allows for setting of all values in form
@@ -75,7 +78,7 @@ form - the object returned from this hook will have stable referential identity.
 - validate - the function / object passed in as validate
 - validating (lazy) - `true` if the form is currently doing async validation
 - changed (lazy) - an object with input names as keys and whether they've changed as a boolean value
-- isSubmitting (lazy) - is true when submit is called and not finished in case of async submit
+- isSubmitting - is true when submit is called and not finished in case of async submit
 - valid (lazy) - true if there are no errors
 - invalid (lazy) - inverse of valid
 - canSubmit (lazy) - `!isSubmitting && valid`
