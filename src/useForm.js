@@ -2,7 +2,7 @@ import React from "react";
 
 import useFormRef from "./useFormRef";
 import useSubmit from "./useSubmit";
-import { noop, useMap } from "./util";
+import { noop, useMap, get } from "./util";
 
 export default function useForm({
   handleSubmit,
@@ -15,11 +15,12 @@ export default function useForm({
 
   const setValues = React.useCallback(
     (values) => {
-      Object.entries(values)
-        .filter(([name]) => inputs.has(name))
-        .forEach(([name, value]) => {
-          inputs.get(name).meta.setValue(value, true);
-        });
+      for (const [name, input] of inputs.entries()) {
+        const value = get(values, name);
+        if (value != null) {
+          input.meta.setValue(value, true);
+        }
+      }
     },
     [inputs]
   );
