@@ -17,7 +17,8 @@ button {
   border-width: 2px;
 }
 
-.input input:focus {
+.input input:focus,
+.input select:focus {
   border-color: #aaa;
   outline-style: none;
 }
@@ -40,4 +41,9 @@ button {
 
 .input.valid input {
   border-bottom-color: var(--green);
+}
+
+.input.active select,
+.input.active input {
+  border-color: pink;
 }
