@@ -1,21 +1,21 @@
-declare function useInput<T = string, E = string>(props?: Partial<UseInput<T, E>>): Input<T, E>;
+declare function useInput<T = string, E = string>(props?: UseInput<T, E>): Input<T, E>;
 
-declare function useForm<T = Inputs>(props: Partial<UseForm<T>>): Form<T>;
+declare function useForm<T extends Inputs = Inputs>(props: UseForm<T>): Form<T>;
 
 export type UseInput<T, E> = {
-  initialValue: T;
-  validate: (value: T) => Promise<E | undefined> | E | undefined;
-  delay: number;
+  defaultValue?: T;
+  validate?: (value: T) => Promise<E | undefined>;
+  delay?: number;
 
-  format: (value: T) => T | string;
-  normalize: (value: T) => T;
-  parse: (value: T | string | ((pv: T) => T), prevValue: T) => T;
+  format?: (value: T) => T | string;
+  normalize?: (value: T) => T;
+  parse?: (value: T | string | ((pv: T) => T), prevValue: T) => T;
 
-  addToForm: { form: Form<any>, name: string };
+  addToForm?: { form?: Form, name?: string };
 
-  handleBlur: React.FocusEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
-  handleChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
-  handleFocus: React.FocusEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
+  handleBlur?: React.FocusEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
+  handleChange?: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
+  handleFocus?: React.FocusEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
 }
 
 export type Input<T = string, E = string> = {
@@ -27,7 +27,7 @@ export type Input<T = string, E = string> = {
 }
 
 export type Inputs = {
-  [name: string]: Input<any, any> | Inputs;
+  [name: string]: Input<unknown, unknown> | Inputs;
 }
 
 export type Meta<T, E> = {
@@ -47,19 +47,19 @@ export type Meta<T, E> = {
   setValue: (value: T | string | ((pv: T) => T), changed: boolean) => void;
   setTouched: (isTouched: boolean) => void;
 
-  form: { current?: Form<any> };
+  form: { current?: Form };
 }
 
-export type UseForm<T> = {
+export type UseForm<T extends Inputs = Inputs> = {
   inputs: T;
-  initialValues: Partial<FormValues<T>>;
-  handleSubmit: (values: FormValues<T>) => 
+  defaultValues?: Partial<FormValues<T>>;
+  handleSubmit: (values: FormValues<T>) =>
     Promise<FormErrors<T> | undefined> | FormErrors<T> | undefined;
-  validate: (values: FormValues<T>) => 
+  validate?: (values: FormValues<T>) =>
     Promise<FormErrors<T> | undefined> | FormErrors<T> | undefined;
 }
 
-export type Form<T> = {
+export type Form<T extends Inputs = Inputs> = {
   inputs: Map<string, Input>;
   onSubmit: React.FormEventHandler<HTMLFormElement>;
   values: FormValues<T>; // lazy
@@ -81,14 +81,18 @@ export type Form<T> = {
   setValues: (values: Partial<FormValues<T>>) => void;
 }
 
-export type FormValues<T> = {
+export type FormValues<T extends Inputs> = {
   [Name in keyof T]: T[Name] extends Inputs 
     ? FormValues<T[Name]> 
-    : T[Name]["meta"]["actualValue"];
+    : T[Name] extends Input
+    ? T[Name]["meta"]["actualValue"]
+    : never;
 }
 
-export type FormErrors<T> = {
+export type FormErrors<T extends Inputs> = {
   [Name in keyof T]: T[Name] extends Inputs 
     ? FormErrors<T[Name]> 
-    : T[Name]["meta"]["error"] | undefined;
+    : T[Name] extends Input
+    ? T[Name]["meta"]["error"] | undefined
+    : never;
 }

@@ -5,17 +5,17 @@ import { getEventValue, id, inputIdentifier, noop } from "./util";
 
 export default function useInput({
   addToForm: { form: addForm, name } = {},
+  defaultValue = "",
   delay = 200,
   format = id,
   handleBlur = noop,
   handleChange = noop,
   handleFocus = noop,
-  initialValue = "",
   normalize = id,
   parse = id,
   validate = noop,
 } = {}) {
-  const [actualValue, setActualValue] = React.useState(initialValue);
+  const [actualValue, setActualValue] = React.useState(defaultValue);
   const [touched, setTouched] = React.useState(false);
   const [active, setActive] = React.useState(false);
   const form = React.useRef();
@@ -83,7 +83,7 @@ export default function useInput({
 
   React.useDebugValue(actualValue);
 
-  const dirty = actualValue !== initialValue;
+  const dirty = actualValue !== defaultValue;
   Object.assign(meta, {
     active,
     actualValue,

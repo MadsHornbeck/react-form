@@ -8,21 +8,21 @@ import { wait } from "../util";
 function ComplexForm() {
   const name = useInput({
     validate: isRequired,
-    initialValue: "John Doe",
+    defaultValue: "John Doe",
   });
   const email = useInput({
     validate: emailValidate,
-    initialValue: "john.doe@example.com",
+    defaultValue: "john.doe@example.com",
   });
   const phone = useInput({
     format: phoneFormat,
     parse: phoneParse,
   });
   const sex = useInput();
-  const favoriteColor = useInput({ initialValue: [] });
+  const favoriteColor = useInput({ defaultValue: [] });
   const profilePicture = useInput({ validate: isRequired });
   const age = useInput({
-    initialValue: 20,
+    defaultValue: 20,
     validate: isRequired,
     normalize: Number,
   });

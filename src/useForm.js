@@ -6,7 +6,7 @@ import { noop, useMap, get } from "./util";
 
 export default function useForm({
   handleSubmit,
-  initialValues = {},
+  defaultValues = {},
   inputs: is = {},
   validate = noop,
 }) {
@@ -26,7 +26,7 @@ export default function useForm({
   );
 
   React.useEffect(() => {
-    setValues(initialValues);
+    setValues(defaultValues);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // TODO: maybe make this not run every render.

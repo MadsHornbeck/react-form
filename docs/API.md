@@ -11,7 +11,7 @@ All props designated with `(lazy)` are only evaluated when accessed.
 
 Basic
 
-- initialValue - The value the input will initially have. Updating this will not
+- defaultValue - The value the input will initially have. Updating this will not
   update the value of the field, to achieve this use the `meta.setValue` on the
   input object.
 - validate - `(value) => error | void` - A function or array of functions that
@@ -48,7 +48,7 @@ input - The object returned from this hook will have stable referential identity
   - active - `true` when the input has focus.
   - actualValue - The value as it's stored, different from the value property
     only when `format` is being used and `meta.active` is `false`.
-  - dirty - `true` if value is the same as `initialValue`.
+  - dirty - `true` if value is the same as `defaultValue`.
   - error (lazy) - Error for the input, either from input, form, or submit validation.
   - form - Reference to the form object the input is used in.
   - inputError (lazy) - The input level error.
@@ -70,7 +70,7 @@ Basic
 - inputs - Object with all the inputs in your form, use the names you want for
   your values.
 - handleSubmit - Is called with values from all inputs when form is submitted.
-- initialValues - Object of values that will be the initial values, this will
+- defaultValues - Object of values that will be the initial values, this will
   overwrite any value set on the individual inputs.
 - validate - A function or validate the inputs, should return an object with
   `{ [inputName]: error }`.
