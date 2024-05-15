@@ -9,7 +9,7 @@ export default function useForm({
   defaultValues = {},
   inputs: is = {},
   validate = noop,
-}) {
+} = {}) {
   const [inputs, setInputs] = useMap(is);
   const form = useFormRef();
 
