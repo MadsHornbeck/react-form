@@ -5,7 +5,7 @@ import useSubmit from "./useSubmit";
 import { noop, useMap, get } from "./util";
 
 export default function useForm({
-  handleSubmit,
+  handleSubmit = noop,
   defaultValues = {},
   inputs: is = {},
   validate = noop,

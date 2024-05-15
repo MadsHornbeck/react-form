@@ -1,6 +1,6 @@
 declare function useInput<T = string, E = string>(props?: UseInput<T, E>): Input<T, E>;
 
-declare function useForm<T extends Inputs = Inputs>(props: UseForm<T>): Form<T>;
+declare function useForm<T extends Inputs = Inputs>(props?: UseForm<T>): Form<T>;
 
 export type UseInput<T, E> = {
   defaultValue?: T;
@@ -20,6 +20,7 @@ export type UseInput<T, E> = {
 
 export type Input<T = string, E = string> = {
   value: T | string;
+  name: string;
   onBlur: React.FocusEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
   onChange: React.ChangeEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
   onFocus: React.FocusEventHandler<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
@@ -51,10 +52,10 @@ export type Meta<T, E> = {
 }
 
 export type UseForm<T extends Inputs = Inputs> = {
-  inputs: T;
+  inputs?: T;
   defaultValues?: Partial<FormValues<T>>;
-  handleSubmit: (values: FormValues<T>) =>
-    Promise<FormErrors<T> | undefined> | FormErrors<T> | undefined;
+  handleSubmit?: (values: FormValues<T>) =>
+    Promise<FormErrors<T> | undefined> | FormErrors<T> | undefined | void;
   validate?: (values: FormValues<T>) =>
     Promise<FormErrors<T> | undefined> | FormErrors<T> | undefined;
 }
