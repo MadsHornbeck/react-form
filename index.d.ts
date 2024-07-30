@@ -4,7 +4,8 @@ declare function useForm<T extends Inputs = Inputs>(props?: UseForm<T>): Form<T>
 
 export type UseInput<T, E> = {
   defaultValue?: T;
-  validate?: (value: T) => E | undefined |  Promise<E | undefined>;
+  validate?: ((value: T) => E | undefined |  Promise<E | undefined>)
+    | ((value: T) => E | undefined |  Promise<E | undefined>)[];
   delay?: number;
 
   format?: (value: T) => T | string;
