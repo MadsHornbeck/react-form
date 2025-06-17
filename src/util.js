@@ -33,8 +33,11 @@ export const validateField = (validate) =>
 export function useUpdate() {
   const [, update] = React.useState();
   const cb = React.useRef(() => update({}));
-  React.useEffect(() => () => {
-    cb.current = noop;
+  React.useEffect(() => {
+    cb.current = () => update({});
+    return () => {
+      cb.current = noop;
+    };
   }, []);
   return () => cb.current();
 }
